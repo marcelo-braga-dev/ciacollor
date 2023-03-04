@@ -1,0 +1,46 @@
+:root {
+    --cor-1: rgb(31, 73, 125);
+    --cor-2: rgb(248, 127, 8);
+}
+
+/*btn*/
+.btn-primary {
+    color: #fff;
+    background-color: var(--cor-1);
+}
+
+.btn-primary:hover {
+    background-color: var(--cor-2);
+}
+
+/*bg*/
+.bg-primary {
+    background-color: var(--cor-1) !important;
+    color: white;
+}
+.btn-outline-primary {
+    border-color: var(--cor-1) !important;
+    color: var(--cor-1);
+}
+.btn-outline-primary.active {
+    background-color: var(--cor-1) !important;
+    color: var(--cor-1);
+}
+
+.bg-secundary {
+    background-color: var(--cor-2) !important;
+    color: white;
+}
+
+.text-primary {
+    background-color: var(--cor-1) !important;
+    color: white;
+}
+
+.text-secundary {
+    color: var(--cor-2);
+}
+
+.navmenu-active {
+    color: var(--cor-2);
+}
