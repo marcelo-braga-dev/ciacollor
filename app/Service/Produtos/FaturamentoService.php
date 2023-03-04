@@ -14,87 +14,71 @@ class FaturamentoService
     public function __construct()
     {
         $this->nome = (new User())->getNomes();
-        $this->vendedores = (new UsuariosService())->todosUsuarios()['vendedor'];
+        $this->vendedores = [];
     }
 
-    public function faturamento($request)
+    public function faturamento($request, $gerenteAtual = null)
     {
-        $gerente = $request->gerente;
+        $query = (new Produtos())->newQuery()->distinct();
+
+        $gerente = $gerenteAtual ?? $request->gerente;
         $vendedor = $request->vendedor;
         $cliente = $request->cliente;
+        $where = [];
+        if ($gerente) $where[] = ['gerente_regional', $gerente];
+        if ($vendedor) $where[] = ['vendedor', $vendedor];
+        if ($cliente) $where[] = ['cliente', $cliente];
 
-        $analisar = (new Produtos())->dadosFaturamento($gerente, $vendedor, $cliente);
+        count($where) ? $query->where($where) : '';
 
-        return $this->dados($analisar, $request);
-    }
+        $this->vendedores = $query->get('vendedor')->transform(function ($e) {
+            return ['id' => $e->vendedor];
+        });
 
-    private function dados($analisar, $request)
-    {
         $anoComparar = $request->ano_comparar;
         $anoAnalisar = $request->ano_analizar;
         $mes = $request->mes;
 
         $dados = [];
-
-        function getAno($dataProduto, $verificar, $mes)
+        function getDados($ano, $id, $campo, $request, $gerenteAtual)
         {
-            if (!$verificar) return true;
+            $query = (new Produtos())->newQuery();
 
-            $anoProduto = date('Y', strtotime($dataProduto));
-            $mesProduto = date('m', strtotime($dataProduto));
+            $ano ? $query->whereYear('data_cadastro', $ano) : '';
+            $gerenteAtual ? $query->where('gerente_regional', $gerenteAtual) : '';
+            $request->mes ? $query->whereMonth('data_cadastro', $request->mes) : '';
 
-            if ($mes) return ($mesProduto == $mes) && $anoProduto == $verificar;
 
-            return $anoProduto == $verificar;
+            return $query->where('vendedor', $id)->sum($campo);
         }
 
-        // calcula faturamento e litros
-        $faturamento['comparar']['faturamento'] = [];
-        $faturamento['comparar']['litros'] = [];
-        $faturamento['analisar']['faturamento'] = [];
-        $faturamento['analisar']['litros'] = [];
+        foreach ($this->vendedores as $item) {
 
-        // inicia os indices
-        foreach ($analisar as $item) {
-            $faturamento['comparar']['faturamento'][$item->vendedor] = 0;
-            $faturamento['comparar']['litros'][$item->vendedor] = 0;
-            $faturamento['analisar']['faturamento'][$item->vendedor] = 0;
-            $faturamento['analisar']['litros'][$item->vendedor] = 0;
-        }
+            $faturamento['comparar']['faturamento'][$item['id']] =
+                getDados($anoComparar, $item['id'], 'valor_total', $request, $gerenteAtual);
+            $faturamento['comparar']['litros'][$item['id']] =
+                getDados($anoComparar, $item['id'], 'litros', $request, $gerenteAtual);
 
-        // camparar
-        foreach ($analisar as $item) {
-            if (getAno($item->data_cadastro, $anoComparar, $mes)) {
-                $faturamento['comparar']['faturamento'][$item->vendedor] += $item->valor_total;
-                $faturamento['comparar']['litros'][$item->vendedor] += $item->litros;
-            }
-        }
+            $faturamento['analisar']['faturamento'][$item['id']] =
+                getDados($anoAnalisar, $item['id'], 'valor_total', $request, $gerenteAtual);
+            $faturamento['analisar']['litros'][$item['id']] =
+                getDados($anoAnalisar, $item['id'], 'litros', $request, $gerenteAtual);
 
-        // analisar
-        foreach ($analisar as $item) {
-            if (getAno($item->data_cadastro, $anoAnalisar, $mes)) {
-                $faturamento['analisar']['faturamento'][$item->vendedor] += $item->valor_total;
-                $faturamento['analisar']['litros'][$item->vendedor] += $item->litros;
-            }
-        }
-
-        //separa por vendedor
-        foreach ($analisar as $item) {
-            $dados[$item->vendedor] = [
+            $id = $item['id'];
+            $dados[$id] = [
                 'comparar' => [
-                    'faturamento' => convert_float_money($faturamento['comparar']['faturamento'][$item->vendedor]),
-                    'faturamento_float' => $faturamento['comparar']['faturamento'][$item->vendedor],
-                    'litros' => $faturamento['comparar']['litros'][$item->vendedor]
+                    'faturamento' => convert_float_money($faturamento['comparar']['faturamento'][$id]),
+                    'faturamento_float' => $faturamento['comparar']['faturamento'][$id],
+                    'litros' => $faturamento['comparar']['litros'][$id]
 
                 ],
                 'analizar' => [
-                    'faturamento' => convert_float_money($faturamento['analisar']['faturamento'][$item->vendedor]),
-                    'faturamento_float' => $faturamento['analisar']['faturamento'][$item->vendedor],
-                    'litros' => $faturamento['analisar']['litros'][$item->vendedor],
+                    'faturamento' => convert_float_money($faturamento['analisar']['faturamento'][$id]),
+                    'faturamento_float' => $faturamento['analisar']['faturamento'][$id],
+                    'litros' => $faturamento['analisar']['litros'][$id],
                 ],
-                'vendedor' => $this->nome[$item->vendedor]['codigo'] . '-' . $this->nome[$item->vendedor]['nome'],
-                'id_vendedor' => $item->vendedor,
-
+                'vendedor' => $this->nome[$id]['codigo'] . '-' . $this->nome[$id]['nome'],
+                'id_vendedor' => $id,
             ];
         }
 
@@ -111,7 +95,6 @@ class FaturamentoService
             $totalLitrosAnalizar += $item['analizar']['litros'];
         }
 
-
         $razaoComparar = $totalLitrosComparar ? $totalFaturamentoComparar / $totalLitrosComparar : 0;
         $razaoAnalisar = $totalLitrosAnalizar ? $totalFaturamentoAnalizar / $totalLitrosAnalizar : 0;
 
@@ -122,9 +105,9 @@ class FaturamentoService
             'analisar_litros' => $totalLitrosAnalizar,
             'comparar_ticket' => convert_float_money($razaoComparar),
             'analisar_ticket' => convert_float_money($razaoAnalisar),
-            'taxa_faturado' => $totalFaturamentoComparar ? round((($totalFaturamentoAnalizar - $totalFaturamentoComparar) / $totalFaturamentoComparar), 4): 0,
+            'taxa_faturado' => $totalFaturamentoComparar ? round((($totalFaturamentoAnalizar - $totalFaturamentoComparar) / $totalFaturamentoComparar), 4) : 0,
             'taxa_litros' => $totalLitrosComparar ? round((($totalLitrosAnalizar - $totalLitrosComparar) / $totalLitrosComparar), 4) : 0,
-            'taxa_ticket' => $razaoComparar ? round(((($razaoAnalisar) - ($razaoComparar)) / ($razaoComparar)), 4): 0,
+            'taxa_ticket' => $razaoComparar ? round(((($razaoAnalisar) - ($razaoComparar)) / ($razaoComparar)), 4) : 0,
         ];
 
         return $res;

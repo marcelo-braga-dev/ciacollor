@@ -13,7 +13,11 @@ if (!function_exists('print_pre')) {
         exit();
     }
 }
-
+if (!function_exists('id_usuario_atual')) {
+    function id_usuario_atual() {
+        return auth()->id();
+    }
+}
 if (!function_exists('modalSucesso')) {
     function modalSucesso($mensagem)
     {

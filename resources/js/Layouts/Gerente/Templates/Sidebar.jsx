@@ -17,7 +17,7 @@ export default function Sidebar({menuSidebar, submenuSidebar}) {
             'icone': 'fas fa-bullseye',
             'tagMenu': 'gestao_metas',
             'submenu': [
-                {'menu': 'Geral', 'url': route('admin.gestao-metas.geral.index'), 'tag': 'geral'},
+                {'menu': 'Geral', 'url': route('gerente.gestao-metas.geral.index'), 'tag': 'geral'},
             ]
         },
         {
@@ -25,7 +25,7 @@ export default function Sidebar({menuSidebar, submenuSidebar}) {
             'icone': 'fas fa-dollar-sign',
             'tagMenu': 'faturamento',
             'submenu': [
-                {'menu': 'Geral', 'url': route('admin.faturamento.vendedores.index'), 'tag': 'vendedores'},
+                {'menu': 'Geral', 'url': route('gerente.faturamento.vendedores.index'), 'tag': 'vendedores'},
                 // {'menu': 'Clientes', 'url': route('admin.faturamento.vendedores.index'), 'tag': 'clientes'},
                 // {'menu': 'Produtos', 'url': route('admin.faturamento.vendedores.index'), 'tag': 'produtos'},
             ]
@@ -41,29 +41,11 @@ export default function Sidebar({menuSidebar, submenuSidebar}) {
             ]
         },
         {
-            'menu': 'Relatórios',
-            'icone': 'fas fa-box',
-            'tagMenu': 'produtos',
-            'submenu': [
-                {
-                    'menu': 'Importar Arquivo',
-                    'url': route('admin.produtos.importar.index'),
-                    'tag': 'importar'
-                },
-            ]
-        },
-        {
-            'menu': 'Usuários',
+            'menu': 'Vendedores',
             'icone': 'fas fa-users',
             'tagMenu': 'usuarios',
             'submenu': [
-                {'menu': 'Vendedores', 'url': route('admin.usuarios.vendedores.index'), 'tag': 'vendedores'},
-                {
-                    'menu': 'Gerentes Regional',
-                    'url': route('admin.usuarios.gerente-regional.index'),
-                    'tag': 'gerente_regional'
-                },
-                {'menu': 'Admins', 'url': route('admin.usuarios.admins.index'), 'tag': 'admins'},
+                {'menu': 'Vendedores', 'url': route('gerente.usuarios.vendedores.index'), 'tag': 'vendedores'},
             ]
         },
     ];

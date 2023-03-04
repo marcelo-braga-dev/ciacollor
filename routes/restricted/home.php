@@ -8,6 +8,8 @@ Route::get('/', function () {
     switch ($auth) {
         case (new \App\src\Usuarios\Funcoes\AdminsUsuario())->getFuncao() :
             return Inertia::render('Admin/Home');
+        case (new \App\src\Usuarios\Funcoes\GerenteRegionalUsuario())->getFuncao() :
+            return Inertia::render('Gerente/Home');
         default :
         {
             auth()->logout();

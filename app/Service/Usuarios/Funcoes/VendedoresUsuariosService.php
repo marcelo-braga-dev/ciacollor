@@ -24,4 +24,10 @@ class VendedoresUsuariosService extends FuncoesService
 
         return $this->dado($users);
     }
+
+    public function getUsersPeloSuperior($id)
+    {
+        $users = (new User())->getUserPeloSuperior($id);
+        return $this->dados($users);
+    }
 }

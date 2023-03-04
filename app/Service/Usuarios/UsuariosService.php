@@ -13,7 +13,7 @@ class UsuariosService
 
     public function todosUsuarios()
     {
-        $users = (new User())->get();
+        $users = (new User())->newQuery()->get(['id', 'codigo', 'name', 'funcao']);
 
         $dados[(new AdminsUsuario())->getFuncao()] = [];
         $dados[(new GerenteRegionalUsuario())->getFuncao()] = [];
@@ -28,7 +28,20 @@ class UsuariosService
         return $dados;
     }
 
-    public function metas()
+    public function getVendedoresDoGerente($idGerente)
     {
+        $users = (new User())->newQuery()
+            ->where('superior', $idGerente)
+            ->get(['id', 'codigo', 'name', 'funcao']);
+
+        $dados[(new VendedorUsuario())->getFuncao()] = [];
+
+        foreach ($users as $user) {
+            $dados[$user->funcao][] = [
+                'id' => $user->id,
+                'nome' => $user->codigo .' - '.$user->name,
+            ];
+        }
+        return $dados;
     }
 }

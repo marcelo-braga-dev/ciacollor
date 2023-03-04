@@ -11,12 +11,8 @@ use Inertia\Inertia;
 
 class GestaoMetasController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $anos = ['comparar' => $request-> ano_analise, 'analisar' => $request->ano_comparar];
-
-
-
         return Inertia::render('Admin/GestaoMetas/Geral/Index');
     }
 

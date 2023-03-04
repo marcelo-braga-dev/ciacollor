@@ -81,28 +81,15 @@ class Produtos extends Model
 
         if (count($where)) $query->where($where);
 
-        return $query->get();
+        return $query->get(['data_cadastro', 'valor_total', 'litros', 'vendedor']);
+    }
+    public function getClientes() {
+        return $this->newQuery()
+            ->distinct()
+            ->get(['cliente']);
     }
 
-    public function getClientes()
-    {
-        $items = $this->newQuery()->get(['id', 'cliente']);
-
-        $dados = [];
-        foreach ($items as $item) {
-            $dados[$item->cliente] = [
-                'id' => $item->id,
-                'nome' => $item->cliente
-            ];
-        }
-        $res = [];
-        foreach ($dados as $dado) {
-            $res[] = $dado;
-        }
-        return $res;
-    }
-
-    public function vendasMensalGeral($ano)
+    public function vendasMensalGeral($ano, $gerente = null)
     {
         $dados = [];
         $dados['total'] = 0;
@@ -110,6 +97,7 @@ class Produtos extends Model
 
             $query = $this->newQuery();
             $ano ? $query->whereYear('data_cadastro', $ano) : '';
+            $gerente ? $query->where('gerente_regional', $gerente) : '';
             $vendas = $query->whereMonth('data_cadastro', $i)
             ->sum('valor_total');
 
@@ -121,5 +109,13 @@ class Produtos extends Model
             ];
         }
         return $dados;
+    }
+
+    public function getClientesUsuario($idUsuario)
+    {
+        return $this->newQuery()
+            ->where('gerente_regional', $idUsuario)
+            ->distinct()
+            ->get(['cliente']);
     }
 }

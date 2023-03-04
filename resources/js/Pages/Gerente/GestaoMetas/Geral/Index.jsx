@@ -1,4 +1,4 @@
-import Layout from "@/Layouts/Admin/Layout";
+import Layout from "@/Layouts/Gerente/Layout";
 import {TextField} from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 import {round} from "lodash";
@@ -19,7 +19,7 @@ export default function ({}) {
     function buscarDados(key, valor) {
         setData(key, valor)
         handleToggle()
-        axios.post(route('admin.gestao-metas.filtro', {...data, [key]: valor}))
+        axios.post(route('gerente.gestao-metas.filtro', {...data, [key]: valor}))
             .then((response) => {
                 setMetaAnual(response.data.meta_anual)
                 setVendasAnalisar(response.data.vendas_analisar)
@@ -33,7 +33,7 @@ export default function ({}) {
     const metaAnoFloat = round(metaAnual / 12, 2)
 
     useEffect(() => {
-        axios.post(route('admin.gestao-metas.filtro', {...data}))
+        axios.post(route('gerente.gestao-metas.filtro', {...data}))
             .then((response) => {
                 setMetaAnual(response.data.meta_anual)
                 setVendasAnalisar(response.data.vendas_analisar)

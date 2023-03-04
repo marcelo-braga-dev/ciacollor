@@ -47,4 +47,11 @@ class MetaVendas extends Model
     {
         return $this->newQuery()->sum('anual');
     }
+
+    public function metaAnualUsuario()
+    {
+        return $this->newQuery()
+            ->where('users_id', auth()->id())
+            ->sum('anual');
+    }
 }

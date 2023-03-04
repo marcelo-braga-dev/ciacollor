@@ -208,4 +208,11 @@ class User extends Authenticatable
     {
         return $this->newQuery()->get();
     }
+
+    public function getUserPeloSuperior($id)
+    {
+        return $this->newQuery()
+            ->where('superior', $id)
+            ->get();
+    }
 }

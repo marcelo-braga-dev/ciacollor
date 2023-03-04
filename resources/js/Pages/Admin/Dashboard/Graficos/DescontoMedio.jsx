@@ -24,7 +24,7 @@ export default function DescontoMedio()
 
 
     }
-    return (
-        <div id="columnchart_material" style={{width: '100%'}}></div>
+    return (<></>
+        // <div id="columnchart_material" style={{width: '100%'}}></div>
     )
 }

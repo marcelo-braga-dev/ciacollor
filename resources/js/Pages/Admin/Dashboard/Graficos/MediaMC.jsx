@@ -21,7 +21,7 @@ export default function MediaMC()
         chart.draw(data, options);
     }
 
-    return (
-        <div id="piechart_3d" style={{width: '100%'}}></div>
+    return (<></>
+        // <div id="piechart_3d" style={{width: '100%'}}></div>
     )
 }

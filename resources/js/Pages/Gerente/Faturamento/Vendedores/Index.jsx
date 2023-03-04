@@ -1,4 +1,4 @@
-import Layout from "@/Layouts/Admin/Layout";
+import Layout from "@/Layouts/Gerente/Layout";
 import {TextField} from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 import {useForm} from "@inertiajs/react";
@@ -16,7 +16,7 @@ export default function ({usuarios}) {
     function buscarDados(key, valor) {
         setData(key, valor)
         handleToggle()
-        axios.post(route('admin.faturamento.vendedores-filtro', {...data, [key]: valor}))
+        axios.post(route('gerente.faturamento.vendedores-filtro', {...data, [key]: valor}))
             .then((response) => {
                 setDadosTable(response.data.tabela)
                 setDadosTotais(response.data.totais)
@@ -25,13 +25,13 @@ export default function ({usuarios}) {
     }
 
     useEffect(() => {
-        axios.post(route('admin.faturamento.vendedores-filtro', {...data}))
+        axios.post(route('gerente.faturamento.vendedores-filtro', {...data}))
             .then((response) => {
                 setDadosTable(response.data.tabela)
                 setDadosTotais(response.data.totais)
                 handleClose()
             })
-        axios.post(route('admin.faturamento.vendedores-clientes', {...data}))
+        axios.post(route('gerente.faturamento.vendedores-clientes', {...data}))
             .then((response) => {
                 setClientes(response.data)
             })
@@ -103,19 +103,6 @@ export default function ({usuarios}) {
             </div>
 
             <div className="row mb-4 shadow p-3">
-                <div className="col-md-4 mb-4">
-                    <TextField size="small" select fullWidth label="Gerente Regional" defaultValue=""
-                               onChange={e => buscarDados('gerente', e.target.value)}>
-                        <MenuItem value="">Todos</MenuItem>
-                        {usuarios.gerente_regional.map((option, index) => {
-                            return (
-                                <MenuItem key={index} value={option.id}>
-                                    {option.nome}
-                                </MenuItem>
-                            )
-                        })}
-                    </TextField>
-                </div>
                 <div className="col-md-4 mb-4">
                     <TextField size="small" select fullWidth label="Vendedores" defaultValue=""
                                onChange={e => buscarDados('vendedor', e.target.value)}>

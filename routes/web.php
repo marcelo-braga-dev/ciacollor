@@ -12,6 +12,7 @@
 
 require __DIR__ . '/auth.php';
 require __DIR__ . '/restricted/admin/index.php';
+require __DIR__ . '/restricted/gerente/index.php';
 
 require __DIR__ . '/restricted/home.php';
 
