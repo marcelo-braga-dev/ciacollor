@@ -18,6 +18,7 @@ export default function Sidebar({menuSidebar, submenuSidebar}) {
             'tagMenu': 'gestao_metas',
             'submenu': [
                 {'menu': 'Geral', 'url': route('admin.gestao-metas.geral.index'), 'tag': 'geral'},
+                {'menu': 'Meta dos Vendedores', 'url': route('admin.gestao-metas.vendedores.index'), 'tag': 'vendedores'},
             ]
         },
         {
@@ -25,9 +26,8 @@ export default function Sidebar({menuSidebar, submenuSidebar}) {
             'icone': 'fas fa-dollar-sign',
             'tagMenu': 'faturamento',
             'submenu': [
-                {'menu': 'Geral', 'url': route('admin.faturamento.vendedores.index'), 'tag': 'vendedores'},
-                // {'menu': 'Clientes', 'url': route('admin.faturamento.vendedores.index'), 'tag': 'clientes'},
-                // {'menu': 'Produtos', 'url': route('admin.faturamento.vendedores.index'), 'tag': 'produtos'},
+                {'menu': 'Vendedores', 'url': route('admin.faturamento.vendedores.index'), 'tag': 'vendedores'},
+                // {'menu': 'Clientes', 'url': route('admin.faturamento.clientes.index'), 'tag': 'clientes'},
             ]
         },
         {
@@ -42,7 +42,7 @@ export default function Sidebar({menuSidebar, submenuSidebar}) {
         },
         {
             'menu': 'Relatórios',
-            'icone': 'fas fa-box',
+            'icone': 'fas fa-file',
             'tagMenu': 'produtos',
             'submenu': [
                 {

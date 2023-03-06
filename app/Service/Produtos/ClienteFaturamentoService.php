@@ -5,40 +5,44 @@ namespace App\Service\Produtos;
 use App\Models\Produtos;
 use App\Models\User;
 
-class FaturamentoService
+class ClienteFaturamentoService
 {
-    private array $nome;
+    private $totalFaturamento;
 
     public function __construct()
     {
-        $this->nome = (new User())->getNomes();
+        $this->totalFaturamento = 0;
     }
 
-    public function faturamentoVendedor($request, $gerenteAtual = null)
+    public function faturamentoCliente($request, $gerenteAtual = null)
     {
-        $this->getVendedores($gerenteAtual, $request);
+        $items = $this->getVendedores($gerenteAtual, $request);
 
         $dados = [];
 
-        foreach ($this->vendedores as $item) {
-
-            $faturamento = $this->getFaturamentos($item['id'], $request, $gerenteAtual);
-
-            $dados = $this->getDados($item['id'], $faturamento, $dados);
+        foreach ($items as $item) {
+            $faturamento = $this->getFaturamentos($item['id'], $request, $gerenteAtual, $item['nome']);
+            $dados = $this->getDados($item['id'], $faturamento, $dados, $item['nome']);
         }
+
+
 
         return $this->dadosCompremenares($dados);
     }
 
-    private function buscaValor($ano, $id, $campo, $request, $gerenteAtual)
+    public function where($ano, $nome, $campo, $request, $gerenteAtual, $querySun)
     {
-        $querySun = (new Produtos())->newQuery();
-
         $ano ? $querySun->whereYear('data_cadastro', $ano) : '';
         $gerenteAtual ? $querySun->where('gerente_regional', $gerenteAtual) : '';
         $request->mes ? $querySun->whereMonth('data_cadastro', $request->mes) : '';
+    }
 
-        return $querySun->where('vendedor', $id)->sum($campo);
+    private function buscaValor($ano, $nome, $campo, $request, $gerenteAtual, $querySun)
+    {
+
+        $this->where($ano, $nome, $campo, $request, $gerenteAtual, $querySun, $campo);
+
+        return $querySun->where('cliente', $nome)->sum($campo);
     }
 
     public function filtro(mixed $gerenteAtual, $request, $query): void
@@ -53,21 +57,23 @@ class FaturamentoService
         count($where) ? $query->where($where) : '';
     }
 
-    public function getFaturamentos($id, $request, $gerenteAtual): array
+    public function getFaturamentos($id, $request, $gerenteAtual, $nome): array
     {
+        $querySun = (new Produtos())->newQuery();
         $faturamento['comparar']['faturamento'][$id] =
-            $this->buscaValor($request->ano_comparar, $id, 'valor_total', $request, $gerenteAtual, 'vendedor');
+            $this->buscaValor($request->ano_comparar, $nome, 'valor_total', $request, $gerenteAtual, $querySun);
+
         $faturamento['comparar']['litros'][$id] =
-            $this->buscaValor($request->ano_comparar, $id, 'litros', $request, $gerenteAtual, 'vendedor');
+            $this->buscaValor($request->ano_comparar, $nome, 'litros', $request, $gerenteAtual, $querySun);
 
         $faturamento['analisar']['faturamento'][$id] =
-            $this->buscaValor($request->ano_analizar, $id, 'valor_total', $request, $gerenteAtual, 'vendedor');
+            $this->buscaValor($request->ano_analizar, $nome, 'valor_total', $request, $gerenteAtual, $querySun);
         $faturamento['analisar']['litros'][$id] =
-            $this->buscaValor($request->ano_analizar, $id, 'litros', $request, $gerenteAtual, 'vendedor');
+            $this->buscaValor($request->ano_analizar, $nome, 'litros', $request, $gerenteAtual, $querySun);
         return $faturamento;
     }
 
-    public function getDados($id, array $faturamento, array $dados): array
+    public function getDados($id, array $faturamento, array $dados, $nome): array
     {
         $dados[$id] = [
             'comparar' => [
@@ -80,21 +86,22 @@ class FaturamentoService
                 'faturamento_float' => $faturamento['analisar']['faturamento'][$id],
                 'litros' => $faturamento['analisar']['litros'][$id],
             ],
-            'vendedor' => $this->nome[$id]['codigo'] . '-' . $this->nome[$id]['nome'],
-            'id_vendedor' => $id,
+            'vendedor' => $nome,
         ];
         return $dados;
     }
 
-    public function getVendedores(mixed $gerenteAtual, $request): void
+    public function getVendedores(mixed $gerenteAtual, $request)
     {
         $query = (new Produtos())->newQuery()->distinct();
 
         $this->filtro($gerenteAtual, $request, $query);
 
+        $this->totalFaturamento = $query->get('cliente');
+
         // coleta vendedores com produtos
-        $this->vendedores = $query->get('vendedor')->transform(function ($e) {
-            return ['id' => $e->vendedor];
+        return $query->limit(20)->get('cliente')->transform(function ($e) {
+            return ['id' => md5($e->cliente), 'nome' => $e->cliente];
         });
     }
 

@@ -1,16 +1,11 @@
-import Layout from "@/Layouts/Gerente/Layout";
+import Layout from "@/Layouts/Admin/Layout";
 
 export default function ({usuarios}) {
     return (
-        <Layout container titlePage="Vendedores" menu="usuarios" submenu="vendedores">
+        <Layout container titlePage="Metas dos Vendedores" menu="gestao_metas" submenu="vendedores">
             <div className="row justify-content-between">
                 <div className="col-auto">
-                    <h6>Vendedores</h6>
-                </div>
-                <div className="col-auto">
-                    <a className="btn btn-primary btn-sm" href={route('gerente.usuarios.vendedores.create')}>
-                        Cadastrar Vendedor
-                    </a>
+                    <h6>Metas dos Vendedores</h6>
                 </div>
             </div>
             <div className="table-responsive">
@@ -19,7 +14,8 @@ export default function ({usuarios}) {
                     <tr>
                         <th className="col-1">Código</th>
                         <th>Nome</th>
-                        <th>Cadastro</th>
+                        <th>Gerente Regional</th>
+                        <th>Meta Anual</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -29,10 +25,13 @@ export default function ({usuarios}) {
                             <tr key={index}>
                                 <td className="text-center">{usuario.codigo}</td>
                                 <td><b>{usuario.nome}</b></td>
-                                <td className="col-2">{usuario.data_cadastro}</td>
+                                <td>{usuario.superior_nome}</td>
+                                <td>{usuario.meta_anual ? <>R$ {usuario.meta_anual}</> : '-'}</td>
                                 <td>
                                     <a className="btn btn-link text-dark p-0 m-0"
-                                    href={route('gerente.usuarios.vendedores.show', usuario.id)}>Ver</a>
+                                       href={route('admin.gestao-metas.vendedores.edit', usuario.id)}>
+                                        Editar
+                                    </a>
                                 </td>
                             </tr>
                         )

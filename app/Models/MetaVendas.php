@@ -52,6 +52,18 @@ class MetaVendas extends Model
     {
         return $this->newQuery()
             ->where('users_id', auth()->id())
-            ->sum('anual');
+            ->first('anual')->anual ?? 0;
+    }
+
+    public function metaAnualGerente()
+    {
+        $vendedores = (new User())->getUserPeloSuperior(id_usuario_atual());
+
+        $query = (new MetaVendas())->newQuery();
+        foreach ($vendedores as $vendedor) {
+            $query->orWhere('users_id', $vendedor['id']);
+        }
+
+        return $vendedores->count() ? $query->sum('anual') : 0;
     }
 }

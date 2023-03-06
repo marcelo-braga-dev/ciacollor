@@ -55,7 +55,7 @@ export default function ({dados, gerentes}) {
                         </TextField>
                     </div>
                     <div className="col-md-3 mb-4">
-                        <TextField label="Meta Anual" required fullWidth value={data.meta}
+                        <TextField  type="number" label="Meta Anual" required fullWidth value={data.meta}
                                    onChange={e => setData('meta', e.target.value)}/>
                     </div>
                 </div>

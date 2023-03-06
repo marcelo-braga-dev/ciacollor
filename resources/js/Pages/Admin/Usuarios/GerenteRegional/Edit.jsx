@@ -41,7 +41,7 @@ export default function ({dados}) {
                                    onChange={e => setData('email', e.target.value)}/>
                     </div>
                     <div className="col-md-3 mb-4">
-                        <TextField label="Meta Anual" required fullWidth value={data.meta}
+                        <TextField  type="number" label="Meta Anual" required fullWidth value={data.meta}
                                    onChange={e => setData('meta', e.target.value)}/>
                     </div>
                 </div>

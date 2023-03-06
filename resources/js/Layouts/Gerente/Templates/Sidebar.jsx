@@ -18,6 +18,7 @@ export default function Sidebar({menuSidebar, submenuSidebar}) {
             'tagMenu': 'gestao_metas',
             'submenu': [
                 {'menu': 'Geral', 'url': route('gerente.gestao-metas.geral.index'), 'tag': 'geral'},
+                {'menu': 'Meta dos Vendedores', 'url': route('gerente.gestao-metas.vendedores.index'), 'tag': 'vendedores'},
             ]
         },
         {

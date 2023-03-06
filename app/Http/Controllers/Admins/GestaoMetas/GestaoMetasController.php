@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers\Admins\GestaoMetas;
 
+use App\Http\Controllers\Admins\Usuarios\GerenteRegionalController;
 use App\Http\Controllers\Controller;
 use App\Models\MetaVendas;
 use App\Models\Produtos;
+use App\Service\Usuarios\Funcoes\GerenteRegionalUsuariosService;
+use App\Service\Usuarios\Funcoes\VendedoresUsuariosService;
 use App\Service\Usuarios\UsuariosService;
+use App\src\Usuarios\Funcoes\GerenteRegionalUsuario;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -13,19 +17,28 @@ class GestaoMetasController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Admin/GestaoMetas/Geral/Index');
+        $gerentes = (new GerenteRegionalUsuariosService())->getUsers();
+        $vendedores = (new VendedoresUsuariosService())->getUsers();
+
+        return Inertia::render('Admin/GestaoMetas/Geral/Index',
+            compact('vendedores', 'gerentes'));
     }
 
     public function filtrar(Request $request)
     {
         $metaAnual = (new MetaVendas())->metaAnual();
-        $vendasComparar = (new Produtos())->vendasMensalGeral($request->ano_analise);
-        $vendasAnalisar = (new Produtos())->vendasMensalGeral($request->ano_comparar);
+        $vendasComparar = (new Produtos())
+            ->vendasMensalGeral($request->ano_analise, $request->gerente, $request->vendedor);
+        $vendasAnalisar = (new Produtos())
+            ->vendasMensalGeral($request->ano_comparar, $request->gerente, $request->vendedor);
+
+        $vendedores = (new VendedoresUsuariosService())->getUsersPeloSuperior($request->gerente);
 
         return [
             'meta_anual' => $metaAnual,
             'vendas_comparar' => $vendasComparar,
             'vendas_analisar' => $vendasAnalisar,
+            'vendedores' => $vendedores
         ];
     }
 }

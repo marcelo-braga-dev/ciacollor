@@ -21,7 +21,7 @@ class GeralController extends Controller
 
     public function filtrar(Request $request)
     {
-        return (new FaturamentoService())->faturamento($request, id_usuario_atual());
+        return (new FaturamentoService())->faturamentoVendedor($request, id_usuario_atual());
     }
 
     public function clientes()

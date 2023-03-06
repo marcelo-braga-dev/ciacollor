@@ -14,7 +14,7 @@ if (!function_exists('convert_money_float')) {
     function convert_money_float($arg, $decimais = 2)
     {
         try {
-            if (is_string($arg)) {
+            if (!is_numeric($arg)) {
                 $arg = str_replace('.', '', $arg);
                 $arg = str_replace(',', '.', $arg);
                 $arg = number_format($arg, $decimais, '.', '');

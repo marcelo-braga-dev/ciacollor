@@ -83,13 +83,15 @@ class Produtos extends Model
 
         return $query->get(['data_cadastro', 'valor_total', 'litros', 'vendedor']);
     }
-    public function getClientes() {
+
+    public function getClientes()
+    {
         return $this->newQuery()
             ->distinct()
             ->get(['cliente']);
     }
 
-    public function vendasMensalGeral($ano, $gerente = null)
+    public function vendasMensalGeral($ano, $gerente = null, $vendedor = null)
     {
         $dados = [];
         $dados['total'] = 0;
@@ -98,13 +100,15 @@ class Produtos extends Model
             $query = $this->newQuery();
             $ano ? $query->whereYear('data_cadastro', $ano) : '';
             $gerente ? $query->where('gerente_regional', $gerente) : '';
+            $vendedor ? $query->where('vendedor', $vendedor) : '';
+
             $vendas = $query->whereMonth('data_cadastro', $i)
-            ->sum('valor_total');
+                ->sum('valor_total');
 
             $dados['total'] += $vendas;
 
             $dados[$i] = [
-                'valor' => convert_float_money($vendas),
+                'valor' => $vendas,
                 'valor_float' => round($vendas, 2),
             ];
         }

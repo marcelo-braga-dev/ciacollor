@@ -18,6 +18,10 @@ export default function Navbar({titlePage}) {
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
     const {post} = useForm()
 
+    function logoff() {
+        post(route('logout'))
+    }
+
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
@@ -32,7 +36,6 @@ export default function Navbar({titlePage}) {
     const handleMenuClose = () => {
         setAnchorEl(null);
         handleMobileMenuClose();
-        post(route('logout'))
     };
 
     const handleMobileMenuOpen = (event) => {
@@ -56,7 +59,7 @@ export default function Navbar({titlePage}) {
             open={isMenuOpen}
             onClose={handleMenuClose}
         >
-            <MenuItem onClick={handleMenuClose}>Sair</MenuItem>
+            <MenuItem onClick={() => logoff()}>Sair</MenuItem>
         </Menu>
     );
 

@@ -4,8 +4,6 @@ import MenuItem from "@mui/material/MenuItem";
 import {useForm} from "@inertiajs/react";
 import axios from "axios";
 import {useEffect, useState} from "react";
-import CircularProgress from "@mui/material/CircularProgress";
-import Backdrop from "@mui/material/Backdrop";
 
 export default function ({usuarios}) {
     const {data, setData} = useForm({})
@@ -17,7 +15,7 @@ export default function ({usuarios}) {
     function buscarDados(key, valor) {
         setData(key, valor)
         setLoading(true)
-        axios.post(route('admin.faturamento.vendedores-filtro', {...data, [key]: valor}))
+        axios.post(route('admin.faturamento.clientes-filtro', {...data, [key]: valor}))
             .then((response) => {
                 setDadosTable(response.data.tabela)
                 setDadosTotais(response.data.totais)
@@ -26,12 +24,12 @@ export default function ({usuarios}) {
     }
 
     useEffect(() => {
-        axios.post(route('admin.faturamento.vendedores-filtro', {...data}))
+        axios.post(route('admin.faturamento.clientes-filtro', {...data}))
             .then((response) => {
                 setDadosTable(response.data.tabela)
                 setDadosTotais(response.data.totais)
             })
-        axios.post(route('admin.faturamento.vendedores-clientes', {...data}))
+        axios.post(route('admin.faturamento.clientes-clientes', {...data}))
             .then((response) => {
                 setClientes(response.data)
             })
@@ -43,7 +41,7 @@ export default function ({usuarios}) {
     }
 
     return (
-        <Layout container titlePage="Faturamento Vendedores" menu="faturamento" submenu="vendedores">
+        <Layout container titlePage="Faturamento Vendedores" menu="faturamento" submenu="clientes">
             <h6>Filtros</h6>
             <div className="row mb-4">
                 <div className="col-md-6 p-3 shadow">
@@ -172,14 +170,14 @@ export default function ({usuarios}) {
                     <table className="table table-bordered table-hover table-r">
                         <thead>
                         <tr className="text-center">
-                            <th className="bg-primary" rowSpan={2}>Vendedor</th>
-                            <th className="bg-primary" colSpan={2}>Ano a Comparar</th>
+                            <th className="text-right" rowSpan={2}>CLIENTES</th>
+                            <th className="bg-warning text-white" colSpan={2}>Ano a Comparar</th>
                             <th className="bg-primary" colSpan={2}>Ano de Análise</th>
                         </tr>
                         <tr>
                             <th className="bg-warning text-white">Faturamento</th>
-                            <th className="bg-primary">Total Litros</th>
-                            <th className="bg-warning text-white">Faturamento</th>
+                            <th className="bg-warning text-white">Total Litros</th>
+                            <th className="bg-primary">Faturamento</th>
                             <th className="bg-primary">Total Litros</th>
                         </tr>
                         </thead>
@@ -195,7 +193,6 @@ export default function ({usuarios}) {
                                 </tr>
                             )
                         })}
-
                         </tbody>
                     </table>
                 </div>

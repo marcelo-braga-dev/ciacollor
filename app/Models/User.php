@@ -107,7 +107,7 @@ class User extends Authenticatable
         (new MetaVendas())->atualizar($user->id, $request->meta);
     }
 
-    public function getUser(int $id)
+    public function getUser(int $id) //possui Service
     {
         return $this->newQuery()->find($id);
     }
@@ -197,7 +197,7 @@ class User extends Authenticatable
             ->create([
                 'codigo' => $codigo,
                 'name' => utf8_encode($nome),
-                'email' => uniqid() . '@user.com',
+                'email' => uniqid() . '@email.temporario',
                 'funcao' => $funcao,
                 'status' => 'ativo',
                 'password' => Hash::make('1234')
@@ -209,6 +209,9 @@ class User extends Authenticatable
         return $this->newQuery()->get();
     }
 
+    /**
+     * Class Service: \App\Service\Usuarios\Funcoes\VendedoresUsuariosService
+     */
     public function getUserPeloSuperior($id)
     {
         return $this->newQuery()

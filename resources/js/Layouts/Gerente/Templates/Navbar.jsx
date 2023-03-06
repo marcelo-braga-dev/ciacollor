@@ -21,6 +21,10 @@ export default function Navbar({titlePage}) {
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
+    function logoff() {
+        post(route('logout'))
+    }
+
     const handleProfileMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -56,7 +60,7 @@ export default function Navbar({titlePage}) {
             open={isMenuOpen}
             onClose={handleMenuClose}
         >
-            <MenuItem onClick={handleMenuClose}>Sair</MenuItem>
+            <MenuItem onClick={() => logoff()}>Sair</MenuItem>
         </Menu>
     );
 

@@ -1,35 +1,34 @@
 import Layout from "@/Layouts/Admin/Layout";
-import {TextField} from "@mui/material";
+import {LinearProgress, TextField} from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 import {round} from "lodash";
 import {useForm} from "@inertiajs/react";
 import axios from "axios";
 import {useEffect, useState} from "react";
 
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
-
-export default function ({}) {
+export default function ({vendedores, gerentes}) {
     const {data, setData} = useForm();
 
     const [metaAnual, setMetaAnual] = useState();
     const [vendasComparar, setVendasComparar] = useState();
     const [vendasAnalisar, setVendasAnalisar] = useState();
+    const [listaVendedores, setListaVendedores] = useState(vendedores);
+    const [loading, setLoading] = useState(false);
 
     function buscarDados(key, valor) {
         setData(key, valor)
-        handleToggle()
+        setLoading(true)
         axios.post(route('admin.gestao-metas.filtro', {...data, [key]: valor}))
             .then((response) => {
                 setMetaAnual(response.data.meta_anual)
                 setVendasAnalisar(response.data.vendas_analisar)
                 setVendasComparar(response.data.vendas_comparar)
-                handleClose()
+                if (response.data.vendedores) setListaVendedores(response.data.vendedores)
+                setLoading(false)
             })
-
     }
 
-    const metaAno = round(metaAnual / 12, 2)?.toLocaleString()
+    const metaAno = round(metaAnual / 12, 2)
     const metaAnoFloat = round(metaAnual / 12, 2)
 
     useEffect(() => {
@@ -42,23 +41,30 @@ export default function ({}) {
     }, []);
 
     //LOading
-    const [open, setOpen] = useState(false);
-    const handleClose = () => {
-        setOpen(false);
-    };
-    const handleToggle = () => {
-        setOpen(!open);
-    };
+
+    const loadingAnimation = () => {
+        return <div className="row pt-4"><LinearProgress/></div>
+    }
+
+    function convertMoney(valor) {
+        const valorConvertido = valor?.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+        })
+
+        if (valor < 0) return <span className="text-danger bg-white p-1 rounded">{valorConvertido}</span>
+        return valorConvertido
+    }
+
+    const tri1 = () => vendasAnalisar[1].valor + vendasAnalisar[2].valor + vendasAnalisar[3].valor
+    const tri2 = () => vendasAnalisar[4].valor + vendasAnalisar[5].valor + vendasAnalisar[6].valor
+    const tri3 = () => vendasAnalisar[7].valor + vendasAnalisar[8].valor + vendasAnalisar[9].valor
+    const tri4 = () => vendasAnalisar[10].valor + vendasAnalisar[11].valor + vendasAnalisar[12].valor
+
+    const metaTri = () => metaAno * 3
 
     return (
         <Layout container titlePage="Gestão de Metas" menu="gestao_metas" submenu="geral">
-            <Backdrop
-                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                open={open}
-                onClick={handleClose}
-            >
-                <CircularProgress color="inherit" />
-            </Backdrop>
             <div className="row mb-4 justify-content-between">
                 <div className="col-md-3 shadow pb-3 rounded">
                     <div className="row p-3">
@@ -82,6 +88,35 @@ export default function ({}) {
                                 <MenuItem value="2023">2023</MenuItem>
                             </TextField>
                         </div>
+                        <div className="col-12 mt-3">
+                            <label className="form-label">Gerentes</label>
+                            <TextField size="small" select fullWidth defaultValue=""
+                                       onChange={e => buscarDados('gerente', e.target.value)}>
+                                <MenuItem value="">Todos</MenuItem>
+                                {gerentes.map((vendedor, index) => {
+                                    return (
+                                        <MenuItem key={index} value={vendedor.id}>
+                                            {vendedor.codigo}-{vendedor.nome}
+                                        </MenuItem>
+                                    )
+                                })}
+                            </TextField>
+                        </div>
+
+                        <div className="col-12 mt-3">
+                            <label className="form-label">Vendedores</label>
+                            <TextField size="small" select fullWidth defaultValue=""
+                                       onChange={e => buscarDados('vendedor', e.target.value)}>
+                                <MenuItem value="">Todos</MenuItem>
+                                {listaVendedores.map((vendedor, index) => {
+                                    return (
+                                        <MenuItem key={index} value={vendedor.id}>
+                                            {vendedor.codigo}-{vendedor.nome}
+                                        </MenuItem>
+                                    )
+                                })}
+                            </TextField>
+                        </div>
                     </div>
                 </div>
                 <div className="col-8">
@@ -103,7 +138,7 @@ export default function ({}) {
                         </div>
                         <div className="col-md-5 bg-secundary text-white p-2 rounded mx-3 px-3">
                             <small className="d-block font-weight-bold">VALOR PARA ATINGIR META:</small>
-                            R$ {vendasComparar && (metaAnual-vendasComparar['total']).toLocaleString()}
+                            R$ {vendasComparar && (metaAnual - vendasComparar['total']).toLocaleString()}
                         </div>
                     </div>
 
@@ -113,161 +148,168 @@ export default function ({}) {
                             {round((Math.abs(vendasComparar?.total / metaAnual)), 3)} %
                         </div>
                     </div>
-
                 </div>
             </div>
 
-            <div className="table-responsive">
+            {loading ? loadingAnimation() : ''}
+            {metaAnual ? <>
                 <h6>Análise Vendas no Mês</h6>
-                <table className="table table-bordered table-hover">
-                    <thead>
-                    <tr className="text-center">
-                        <th className="bg-primary">Mês</th>
-                        <th className="bg-primary">Meta {data.ano_analise}</th>
-                        <th className="bg-primary">Vendas {data.ano_analise}</th>
-                        <th className="bg-primary">Vendas {data.ano_comparar}</th>
-                        <th className="bg-primary">Vendas {data.ano_analise} X<br/> Vendas {data.ano_comparar}</th>
-                        <th className="bg-primary">Vendas {data.ano_analise} X<br/> Metas {data.ano_comparar}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td className="font-weight-bold">Janeiro</td>
-                        <td>R$ {metaAno}</td>
-                        <td>R$ {vendasComparar && vendasComparar[1].valor}</td>
-                        <td>R$ {vendasAnalisar && vendasAnalisar[1].valor}</td>
-                        <td>{vendasComparar && round(vendasComparar[1].valor_float - vendasAnalisar[1].valor_float, 2).toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
-                        })}</td>
-                        <td>R$ {vendasComparar && (vendasComparar[1].valor_float - metaAnoFloat).toLocaleString()}</td>
-                    </tr>
-                    <tr>
-                        <td className="font-weight-bold">Fevereiro</td>
-                        <td>R$ {metaAno}</td>
-                        <td>R$ {vendasComparar && vendasComparar[2].valor}</td>
-                        <td>R$ {vendasAnalisar && vendasAnalisar[2].valor}</td>
-                        <td>{vendasComparar && (vendasComparar[2].valor_float - vendasAnalisar[2].valor_float).toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
-                        })}
-                        </td>
-                        <td>R$ {vendasComparar && (vendasComparar[2].valor_float - metaAnoFloat).toLocaleString()}</td>
-                    </tr>
-                    <tr>
-                        <td className="font-weight-bold">Março</td>
-                        <td>R$ {metaAno}</td>
-                        <td>R$ {vendasComparar && vendasComparar[3].valor}</td>
-                        <td>R$ {vendasAnalisar && vendasAnalisar[3].valor}</td>
-                        <td>{vendasComparar && (vendasComparar[3].valor_float - vendasAnalisar[3].valor_float).toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
-                        })}</td>
-                        <td>R$ {vendasComparar && (vendasComparar[3].valor_float - metaAnoFloat).toLocaleString()}</td>
-                    </tr>
-                    <tr>
-                        <td className="font-weight-bold">Abril</td>
-                        <td>R$ {metaAno}</td>
-                        <td>R$ {vendasComparar && vendasComparar[4].valor}</td>
-                        <td>R$ {vendasAnalisar && vendasAnalisar[4].valor}</td>
-                        <td>{vendasComparar && (vendasComparar[4].valor_float - vendasAnalisar[4].valor_float).toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
-                        })}</td>
-                        <td>R$ {vendasComparar && (vendasComparar[4].valor_float - metaAnoFloat).toLocaleString()}</td>
-                    </tr>
-                    <tr>
-                        <td className="font-weight-bold">Maio</td>
-                        <td>R$ {metaAno}</td>
-                        <td>R$ {vendasComparar && vendasComparar[5].valor}</td>
-                        <td>R$ {vendasAnalisar && vendasAnalisar[5].valor}</td>
-                        <td>{vendasComparar && (vendasComparar[5].valor_float - vendasAnalisar[5].valor_float).toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
-                        })}</td>
-                        <td>R$ {vendasComparar && (vendasComparar[5].valor_float - metaAnoFloat).toLocaleString()}</td>
-                    </tr>
-                    <tr>
-                        <td className="font-weight-bold">Junho</td>
-                        <td>R$ {metaAno}</td>
-                        <td>R$ {vendasComparar && vendasComparar[6].valor}</td>
-                        <td>R$ {vendasAnalisar && vendasAnalisar[6].valor}</td>
-                        <td>{vendasComparar && (vendasComparar[6].valor_float - vendasAnalisar[6].valor_float).toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
-                        })}</td>
-                        <td>R$ {vendasComparar && (vendasComparar[6].valor_float - metaAnoFloat).toLocaleString()}</td>
-                    </tr>
-                    <tr>
-                        <td className="font-weight-bold">Julho</td>
-                        <td>R$ {metaAno}</td>
-                        <td>R$ {vendasComparar && vendasComparar[7].valor}</td>
-                        <td>R$ {vendasAnalisar && vendasAnalisar[7].valor}</td>
-                        <td>{vendasComparar && (vendasComparar[7].valor_float - vendasAnalisar[7].valor_float).toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
-                        })}</td>
-                        <td>R$ {vendasComparar && (vendasComparar[7].valor_float - metaAnoFloat).toLocaleString()}</td>
-                    </tr>
-                    <tr>
-                        <td className="font-weight-bold">Agosto</td>
-                        <td>R$ {metaAno}</td>
-                        <td>R$ {vendasComparar && vendasComparar[8].valor}</td>
-                        <td>R$ {vendasAnalisar && vendasAnalisar[8].valor}</td>
-                        <td>{vendasComparar && (vendasComparar[8].valor_float - vendasAnalisar[8].valor_float).toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
-                        })}</td>
-                        <td>R$ {vendasComparar && (vendasComparar[8].valor_float - metaAnoFloat).toLocaleString()}</td>
-                    </tr>
-                    <tr>
-                        <td className="font-weight-bold">Setembro</td>
-                        <td>R$ {metaAno}</td>
-                        <td>R$ {vendasComparar && vendasComparar[9].valor}</td>
-                        <td>R$ {vendasAnalisar && vendasAnalisar[9].valor}</td>
-                        <td>{vendasComparar && (vendasComparar[9].valor_float - vendasAnalisar[9].valor_float).toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
-                        })}</td>
-                        <td>R$ {vendasComparar && (vendasComparar[9].valor_float - metaAnoFloat).toLocaleString()}</td>
-                    </tr>
-                    <tr>
-                        <td className="font-weight-bold">Outubro</td>
-                        <td>R$ {metaAno}</td>
-                        <td>R$ {vendasComparar && vendasComparar[10].valor}</td>
-                        <td>R$ {vendasAnalisar && vendasAnalisar[10].valor}</td>
-                        <td>{vendasComparar && (vendasComparar[10].valor_float - vendasAnalisar[10].valor_float).toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
-                        })}</td>
-                        <td>R$ {vendasComparar && (vendasComparar[10].valor_float - metaAnoFloat).toLocaleString()}</td>
-                    </tr>
-                    <tr>
-                        <td className="font-weight-bold">Novembro</td>
-                        <td>R$ {metaAno}</td>
-                        <td>R$ {vendasComparar && vendasComparar[11].valor}</td>
-                        <td>R$ {vendasAnalisar && vendasAnalisar[11].valor}</td>
-                        <td>{vendasComparar && (vendasComparar[11].valor_float - vendasAnalisar[11].valor_float).toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
-                        })}</td>
-                        <td>R$ {vendasComparar && (vendasComparar[11].valor_float - metaAnoFloat).toLocaleString()}</td>
-                    </tr>
-                    <tr>
-                        <td className="font-weight-bold">Dezembro</td>
-                        <td>R$ {metaAno}</td>
-                        <td>R$ {vendasComparar && vendasComparar[12].valor}</td>
-                        <td>R$ {vendasAnalisar && vendasAnalisar[12].valor}</td>
-                        <td>{vendasComparar && (vendasComparar[12].valor_float - vendasAnalisar[12].valor_float).toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
-                        })}</td>
-                        <td>R$ {vendasComparar && (vendasComparar[12].valor_float - metaAnoFloat).toLocaleString()}</td>
-                    </tr>
+                <div className="table-responsive">
+                    <table className="table table-bordered table-hover">
+                        <thead>
+                        <tr className="text-center">
+                            <th className="bg-primary">Mês</th>
+                            <th className="bg-primary">Meta {data.ano_analise}</th>
+                            <th className="bg-primary">Vendas {data.ano_analise}</th>
+                            <th className="bg-primary">Vendas {data.ano_comparar}</th>
+                            <th className="bg-primary">Vendas {data.ano_analise} X<br/> Vendas {data.ano_comparar}</th>
+                            <th className="bg-primary">Vendas {data.ano_analise} X<br/> Metas {data.ano_comparar}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td className="font-weight-bold">Janeiro</td>
+                            <td>{convertMoney(metaAno)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[1].valor)}</td>
+                            <td>{vendasAnalisar && convertMoney(vendasAnalisar[1].valor)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[1].valor_float - vendasAnalisar[1].valor_float)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[1].valor_float - metaAnoFloat)}</td>
+                        </tr>
+                        <tr>
+                            <td className="font-weight-bold">Fevereiro</td>
+                            <td>{convertMoney(metaAno)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[2].valor)}</td>
+                            <td>{vendasAnalisar && convertMoney(vendasAnalisar[2].valor)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[2].valor_float - vendasAnalisar[2].valor_float)}
+                            </td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[2].valor_float - metaAnoFloat)}</td>
+                        </tr>
+                        <tr>
+                            <td className="font-weight-bold">Março</td>
+                            <td>{convertMoney(metaAno)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[3].valor)}</td>
+                            <td>{vendasAnalisar && convertMoney(vendasAnalisar[3].valor)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[3].valor_float - vendasAnalisar[3].valor_float)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[3].valor_float - metaAnoFloat)}</td>
+                        </tr>
+                        <tr>
+                            <td className="font-weight-bold">Abril</td>
+                            <td>{convertMoney(metaAno)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[4].valor)}</td>
+                            <td>{vendasAnalisar && convertMoney(vendasAnalisar[4].valor)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[4].valor_float - vendasAnalisar[4].valor_float)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[4].valor_float - metaAnoFloat)}</td>
+                        </tr>
+                        <tr>
+                            <td className="font-weight-bold">Maio</td>
+                            <td>{convertMoney(metaAno)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[5].valor)}</td>
+                            <td>{vendasAnalisar && convertMoney(vendasAnalisar[5].valor)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[5].valor_float - vendasAnalisar[5].valor_float)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[5].valor_float - metaAnoFloat)}</td>
+                        </tr>
+                        <tr>
+                            <td className="font-weight-bold">Junho</td>
+                            <td>{convertMoney(metaAno)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[6].valor)}</td>
+                            <td>{vendasAnalisar && convertMoney(vendasAnalisar[6].valor)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[6].valor_float - vendasAnalisar[6].valor_float)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[6].valor_float - metaAnoFloat)}</td>
+                        </tr>
+                        <tr>
+                            <td className="font-weight-bold">Julho</td>
+                            <td>{convertMoney(metaAno)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[7].valor)}</td>
+                            <td>{vendasAnalisar && convertMoney(vendasAnalisar[7].valor)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[7].valor_float - vendasAnalisar[7].valor_float)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[7].valor_float - metaAnoFloat)}</td>
+                        </tr>
+                        <tr>
+                            <td className="font-weight-bold">Agosto</td>
+                            <td>{convertMoney(metaAno)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[8].valor)}</td>
+                            <td>{vendasAnalisar && convertMoney(vendasAnalisar[8].valor)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[8].valor_float - vendasAnalisar[8].valor_float)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[8].valor_float - metaAnoFloat)}</td>
+                        </tr>
+                        <tr>
+                            <td className="font-weight-bold">Setembro</td>
+                            <td>{convertMoney(metaAno)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[9].valor)}</td>
+                            <td>{vendasAnalisar && convertMoney(vendasAnalisar[9].valor)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[9].valor_float - vendasAnalisar[9].valor_float)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[9].valor_float - metaAnoFloat)}</td>
+                        </tr>
+                        <tr>
+                            <td className="font-weight-bold">Outubro</td>
+                            <td>{convertMoney(metaAno)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[10].valor)}</td>
+                            <td>{vendasAnalisar && convertMoney(vendasAnalisar[10].valor)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[10].valor_float - vendasAnalisar[10].valor_float)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[10].valor_float - metaAnoFloat)}</td>
+                        </tr>
+                        <tr>
+                            <td className="font-weight-bold">Novembro</td>
+                            <td>{convertMoney(metaAno)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[11].valor)}</td>
+                            <td>{vendasAnalisar && convertMoney(vendasAnalisar[11].valor)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[11].valor_float - vendasAnalisar[11].valor_float)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[11].valor_float - metaAnoFloat)}</td>
+                        </tr>
+                        <tr>
+                            <td className="font-weight-bold">Dezembro</td>
+                            <td>{convertMoney(metaAno)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[12].valor)}</td>
+                            <td>{vendasAnalisar && convertMoney(vendasAnalisar[12].valor)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[12].valor_float - vendasAnalisar[12].valor_float)}</td>
+                            <td>{vendasComparar && convertMoney(vendasComparar[12].valor_float - metaAnoFloat)}</td>
+                        </tr>
 
-                    </tbody>
-                </table>
-            </div>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div className="table-responsive mt-3">
+                    <table className="table table-bordered table-hover">
+                        <thead>
+                        <tr className="text-center">
+                            <th className="bg-dark text-white">Período</th>
+                            <th className="bg-dark text-white">Acumulado Venda</th>
+                            <th className="bg-dark text-white">Meta Acumulada</th>
+                            <th className="bg-dark text-white">Venda X Meta</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>1° Trimestre</td>
+                            <td>{convertMoney(tri1())}</td>
+                            <td>{convertMoney(metaTri())}</td>
+                            <td>{convertMoney(tri1() - metaTri())}</td>
+                        </tr>
+                        <tr>
+                            <td>2° Trimestre</td>
+                            <td>{convertMoney(tri2())}</td>
+                            <td>{convertMoney(metaTri())}</td>
+                            <td>{convertMoney(tri2() - metaTri())}</td>
+                        </tr>
+                        <tr>
+                            <td>3° Trimestre</td>
+                            <td>{convertMoney(tri3())}</td>
+                            <td>{convertMoney(metaTri())}</td>
+                            <td>{convertMoney(tri3() - metaTri())}</td>
+                        </tr>
+                        <tr>
+                            <td>4° Trimestre</td>
+                            <td>{convertMoney(tri4())}</td>
+                            <td>{convertMoney(metaTri())}</td>
+                            <td>{convertMoney(tri4() - metaTri())}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </> : loadingAnimation()}
+
         </Layout>
     )
 }
