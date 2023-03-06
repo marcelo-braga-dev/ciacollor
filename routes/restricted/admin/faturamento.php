@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admins\Faturamento\ClientesController;
+use App\Http\Controllers\Admins\Faturamento\ProdutosController;
 use App\Http\Controllers\Admins\Faturamento\VendedoresController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,4 +20,10 @@ Route::middleware('auth')
             ->name('clientes-filtro');
         Route::post('clientes-clientes', [ClientesController::class, 'clientes'])
             ->name('clientes-clientes');
+
+        Route::resource('produtos', ProdutosController::class);
+        Route::post('produtos-filtro', [ProdutosController::class, 'filtrar'])
+            ->name('produtos-filtro');
+        Route::post('produtos-clientes', [ProdutosController::class, 'clientes'])
+            ->name('produtos-clientes');
     });

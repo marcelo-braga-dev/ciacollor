@@ -27,6 +27,7 @@ export default function Sidebar({menuSidebar, submenuSidebar}) {
             'tagMenu': 'faturamento',
             'submenu': [
                 {'menu': 'Vendedores', 'url': route('admin.faturamento.vendedores.index'), 'tag': 'vendedores'},
+                {'menu': 'Produtos', 'url': route('admin.faturamento.produtos.index'), 'tag': 'produtos'},
                 // {'menu': 'Clientes', 'url': route('admin.faturamento.clientes.index'), 'tag': 'clientes'},
             ]
         },

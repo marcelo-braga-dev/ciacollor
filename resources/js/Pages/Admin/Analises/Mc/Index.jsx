@@ -82,8 +82,8 @@ export default function ({usuarios}) {
                 <div className="col-md-3 text-center mx-4">
                     <div className="bg-success p-3 rounded text-white">
                         <h6>Média MC</h6>
-                        <span className="d-block">R$</span>
-                        <span className="d-block">0 %</span>
+                        <h5 className="d-block">R$</h5>
+                        <h5 className="d-block">0 %</h5>
                     </div>
                 </div>
             </div>

@@ -82,7 +82,7 @@ export default function ({usuarios}) {
                 <div className="col-md-3 text-center mx-4">
                     <div className="bg-success p-3 rounded text-white">
                         <h6>Desconto Médio</h6>
-                        <span className="d-block">%</span>
+                        <h3 className="d-block">%</h3>
                     </div>
                 </div>
             </div>

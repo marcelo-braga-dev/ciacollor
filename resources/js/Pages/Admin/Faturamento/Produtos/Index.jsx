@@ -17,7 +17,7 @@ export default function ({usuarios}) {
     function buscarDados(key, valor) {
         setData(key, valor)
         setLoading(true)
-        axios.post(route('admin.analise.prazo-medio-filtro', {...data, [key]: valor}))
+        axios.post(route('admin.faturamento.produtos-filtro', {...data, [key]: valor}))
             .then((response) => {
                 setDadosTable(response.data.tabela)
                 setDadosTotais(response.data.totais)
@@ -26,12 +26,12 @@ export default function ({usuarios}) {
     }
 
     useEffect(() => {
-        axios.post(route('admin.analise.prazo-medio-filtro', {...data}))
+        axios.post(route('admin.faturamento.produtos-filtro', {...data}))
             .then((response) => {
                 setDadosTable(response.data.tabela)
                 setDadosTotais(response.data.totais)
             })
-        axios.post(route('admin.analise.prazo-medio-clientes', {...data}))
+        axios.post(route('admin.faturamento.produtos-clientes', {...data}))
             .then((response) => {
                 setClientes(response.data)
             })
@@ -43,15 +43,25 @@ export default function ({usuarios}) {
     }
 
     return (
-        <Layout container titlePage="Faturamento Vendedores" menu="analises" submenu="prazo_medio">
+        <Layout container titlePage="Produtos" menu="faturamento" submenu="produtos">
             <h6>Filtros</h6>
             <div className="row mb-4">
                 <div className="col-md-6 p-3 shadow">
                     <div className="row mb-4">
                         <div className="col">
-                            <label className="form-label">Ano</label>
+                            <label className="form-label">Ano a Comparar</label>
                             <TextField size="small" select fullWidth defaultValue=""
-                                       onChange={e => buscarDados('ano', e.target.value)}>
+                                       onChange={e => buscarDados('ano_comparar', e.target.value)}>
+                                <MenuItem value="">Todos</MenuItem>
+                                <MenuItem value="2021">2021</MenuItem>
+                                <MenuItem value="2022">2022</MenuItem>
+                                <MenuItem value="2023">2023</MenuItem>
+                            </TextField>
+                        </div>
+                        <div className="col">
+                            <label className="form-label">Ano a Analisar</label>
+                            <TextField size="small" select fullWidth defaultValue=""
+                                       onChange={e => buscarDados('ano_analizar', e.target.value)}>
                                 <MenuItem value="">Todos</MenuItem>
                                 <MenuItem value="2021">2021</MenuItem>
                                 <MenuItem value="2022">2022</MenuItem>
@@ -77,12 +87,6 @@ export default function ({usuarios}) {
                                 <MenuItem value="12">DEZ</MenuItem>
                             </TextField>
                         </div>
-                    </div>
-                </div>
-                <div className="col-md-3 text-center mx-4">
-                    <div className="bg-success p-3 rounded text-white">
-                        <h6>Prazo Médio</h6>
-                        <h3 className="d-block">0</h3>
                     </div>
                 </div>
             </div>
@@ -130,24 +134,64 @@ export default function ({usuarios}) {
             </div>
             {loading ? loadingAnimation() : ''}
             {dadosTable.length ? <>
-                <div className="table-responsive mt-4">
-                    <table className="table mt-4 table-bordered table-hover">
+                <div className="row mb-4">
+                    <div className="col shadow">
+                        <table className="table table-sm">
+                            <thead>
+                            <tr>
+                                <td></td>
+                                <td>FATURAMENTO</td>
+                                <td>LITROS</td>
+                                <td>TICKET MÉDIO</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>Ano A Comparar</td>
+                                <td>R$ {dadosTotais.comparar_faturado}</td>
+                                <td>{dadosTotais.comparar_litros}</td>
+                                <td>R$ {dadosTotais.comparar_ticket}</td>
+                            </tr>
+                            <tr>
+                                <td>Ano Análise</td>
+                                <td>R$ {dadosTotais.analisar_faturado}</td>
+                                <td>{dadosTotais.analisar_litros}</td>
+                                <td>R$ {dadosTotais.analisar_ticket}</td>
+                            </tr>
+                            <tr>
+                                <td>Tx. de Crescimento Faturamento</td>
+                                <td>{dadosTotais.taxa_faturado}%</td>
+                                <td>{dadosTotais.taxa_litros}%</td>
+                                <td>{dadosTotais.taxa_ticket}%</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div className="table-responsive">
+                    <table className="table table-bordered table-hover table-r">
                         <thead>
+                        <tr className="text-center">
+                            <th className="bg-primary" rowSpan={2}>Grupo</th>
+                            <th className="bg-primary" colSpan={2}>Ano a Comparar</th>
+                            <th className="bg-primary" colSpan={2}>Ano de Análise</th>
+                        </tr>
                         <tr>
-                            <th>Vendedor</th>
-                            <th>Cliente</th>
-                            <th>Valor Total</th>
-                            <th>Prazo Médio</th>
+                            <th className="bg-warning text-white">Faturamento</th>
+                            <th className="bg-primary">Total Litros</th>
+                            <th className="bg-warning text-white">Faturamento</th>
+                            <th className="bg-primary">Total Litros</th>
                         </tr>
                         </thead>
                         <tbody>
                         {dadosTable.map((item, index) => {
                             return (
                                 <tr key={index} className="text-center">
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td className="text-start"><b>{item.grupo}</b></td>
+                                    <td>R$ {item.comparar.faturamento}</td>
+                                    <td>{item.comparar.litros}</td>
+                                    <td>R$ {item.analizar.faturamento}</td>
+                                    <td>{item.analizar.litros}</td>
                                 </tr>
                             )
                         })}
