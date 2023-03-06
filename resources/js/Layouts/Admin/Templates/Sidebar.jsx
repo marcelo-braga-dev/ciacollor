@@ -35,9 +35,9 @@ export default function Sidebar({menuSidebar, submenuSidebar}) {
             'icone': 'fas fa-chart-pie',
             'tagMenu': 'analises',
             'submenu': [
-                {'menu': 'Prazo Médio', 'url': route('home'), 'tag': 'prazo_medio'},
-                {'menu': 'M.C.', 'url': route('home'), 'tag': 'mc'},
-                {'menu': 'Desconto Médio', 'url': route('home'), 'tag': 'desconto_medio'},
+                {'menu': 'Prazo Médio', 'url': route('admin.analise.prazo-medio.index'), 'tag': 'prazo_medio'},
+                {'menu': 'M.C.', 'url': route('admin.analise.mc.index'), 'tag': 'mc'},
+                {'menu': 'Desconto Médio', 'url': route('admin.analise.desconto-medio.index'), 'tag': 'desconto_medio'},
             ]
         },
         {
