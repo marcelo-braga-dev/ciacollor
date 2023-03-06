@@ -10,7 +10,8 @@ export default function ({dados, gerentes}) {
         nome:  dados.nome,
         email:  dados.email,
         gerente:  dados.superior_id,
-        meta: dados.meta_anual
+        meta_semestre_1: dados.meta_semestre_1,
+        meta_semestre_2: dados.meta_semestre_2
     })
 
     function submit(e) {
@@ -55,8 +56,13 @@ export default function ({dados, gerentes}) {
                         </TextField>
                     </div>
                     <div className="col-md-3 mb-4">
-                        <TextField  type="number" label="Meta Anual" required fullWidth value={data.meta}
-                                   onChange={e => setData('meta', e.target.value)}/>
+                        <TextField  type="number" label="Meta 1° Semestre" required fullWidth value={data.meta_semestre_1}
+                                   onChange={e => setData('meta_semestre_1', e.target.value)}/>
+                    </div>
+
+                    <div className="col-md-3 mb-4">
+                        <TextField  type="number" label="Meta 2° Semestre" required fullWidth value={data.meta_semestre_2}
+                                    onChange={e => setData('meta_semestre_2', e.target.value)}/>
                     </div>
                 </div>
                 <div className="row justify-content-center">

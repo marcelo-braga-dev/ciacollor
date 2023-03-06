@@ -19,9 +19,10 @@ export default function ({usuarios}) {
                     <tr>
                         <th className="col-1">Código</th>
                         <th>Nome</th>
-                        <th>Meta Anual</th>
                         <th>Gerente</th>
-                        <th>Cadastro</th>
+                        <th>Meta 1° Semestre</th>
+                        <th>Meta 2° Semestre</th>
+                        <th>Meta Anual</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -31,9 +32,10 @@ export default function ({usuarios}) {
                             <tr key={index}>
                                 <td className="text-center">{usuario.codigo}</td>
                                 <td><b>{usuario.nome}</b></td>
-                                <td>{usuario.meta_anual && <>R$ {usuario.meta_anual}</>}</td>
                                 <td>{usuario.superior_nome}</td>
-                                <td>{usuario.data_cadastro}</td>
+                                <td>{usuario.meta_semestre_1 && <>R$ {usuario.meta_semestre_1}</>}</td>
+                                <td>{usuario.meta_semestre_2 && <>R$ {usuario.meta_semestre_2}</>}</td>
+                                <td>{usuario.meta_semestre_1 && usuario.meta_semestre_1 + usuario.meta_semestre_2}</td>
                                 <td>
                                     <a className="btn btn-link text-dark p-0 m-0"
                                     href={route('admin.usuarios.vendedores.show', usuario.id)}>Ver</a>

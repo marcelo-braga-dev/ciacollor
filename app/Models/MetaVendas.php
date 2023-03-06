@@ -11,24 +11,18 @@ class MetaVendas extends Model
 
     protected $fillable = [
         'users_id',
-        'anual'
+        'semestre_1',
+        'semestre_2',
     ];
 
-    public function create($id, $meta)
-    {
-        $this->newQuery()
-            ->create([
-                'users_id' => $id,
-                'anual' => $meta
-            ]);
-    }
-
-    public function atualizar($id, $meta)
+    public function atualizar($id, $semestre1, $semestre2)
     {
         $this->newQuery()
             ->updateOrCreate(
-                ['users_id' => $id],
-                ['anual' => convert_money_float($meta)]
+                ['users_id' => $id], [
+                    'semestre_1' => convert_money_float($semestre1),
+                    'semestre_2' => convert_money_float($semestre2)
+                ]
             );
     }
 
@@ -38,7 +32,8 @@ class MetaVendas extends Model
 
         $dados = [];
         foreach ($items as $item) {
-            $dados[$item->users_id] = $item->anual;
+            $dados[$item->users_id]['semestre_1'] = $item->semestre_1;
+            $dados[$item->users_id]['semestre_2'] = $item->semestre_2;
         }
         return $dados;
     }
@@ -46,13 +41,6 @@ class MetaVendas extends Model
     public function metaAnual()
     {
         return $this->newQuery()->sum('anual');
-    }
-
-    public function metaAnualUsuario()
-    {
-        return $this->newQuery()
-            ->where('users_id', auth()->id())
-            ->first('anual')->anual ?? 0;
     }
 
     public function metaAnualGerente()

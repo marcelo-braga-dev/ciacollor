@@ -4,7 +4,11 @@ import MenuItem from "@mui/material/MenuItem";
 import {useForm} from "@inertiajs/react";
 
 export default function ({gerentes}) {
-    const {post, setData} = useForm()
+    const {post, data, setData} = useForm({
+        meta_semestre_1: 0,
+        meta_semestre_2: 0,
+
+    })
 
     function submit(e) {
         e.preventDefault()
@@ -18,7 +22,7 @@ export default function ({gerentes}) {
                 <div className="row">
                     <div className="col-md-3 mb-4">
                         <TextField label="Código" required fullWidth
-                        onChange={e => setData('codigo', e.target.value)}/>
+                                   onChange={e => setData('codigo', e.target.value)}/>
                     </div>
                     <div className="col-md-9 mb-4">
                         <TextField label="Nome" required fullWidth
@@ -49,8 +53,17 @@ export default function ({gerentes}) {
                         </TextField>
                     </div>
                     <div className="col-md-3 mb-4">
-                        <TextField  type="number" label="Meta Anual" required fullWidth
-                                   onChange={e => setData('meta', e.target.value)}/>
+                        <TextField type="number" label="Meta 1° Semestre" required fullWidth
+                                   onChange={e => setData('meta_semestre_1', e.target.value)}/>
+                    </div>
+                    <div className="col-md-3 mb-4">
+                        <TextField type="number" label="Meta 2° Semestre" required fullWidth
+                                   onChange={e => setData('meta_semestre_2', e.target.value)}/>
+                    </div>
+                    <div className="col-md-auto mb-4 pt-3">
+                        <span className="mt-3">
+                            R$ {(parseFloat(data.meta_semestre_1) + parseFloat(data.meta_semestre_2))}
+                        </span>
                     </div>
                 </div>
                 <div className="row justify-content-center">

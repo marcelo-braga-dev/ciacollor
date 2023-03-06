@@ -88,6 +88,15 @@ export default function ({vendedores, gerentes}) {
                                 <MenuItem value="2023">2023</MenuItem>
                             </TextField>
                         </div>
+                        <div className="col-12">
+                            <label className="form-label">Período</label>
+                            <TextField size="small" select fullWidth defaultValue=""
+                                       onChange={e => buscarDados('ano_comparar', e.target.value)}>
+                                <MenuItem value="1_sem">1° Semestre</MenuItem>
+                                <MenuItem value="2_sem">2° Semestre</MenuItem>
+                                <MenuItem value="anual">Anual</MenuItem>
+                            </TextField>
+                        </div>
                         <div className="col-12 mt-3">
                             <label className="form-label">Gerentes</label>
                             <TextField size="small" select fullWidth defaultValue=""

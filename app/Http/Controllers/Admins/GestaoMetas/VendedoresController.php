@@ -29,7 +29,7 @@ class VendedoresController extends Controller
 
     public function update($id, Request $request)
     {
-        (new MetaVendas())->atualizar($id, $request->meta);
+        (new MetaVendas())->atualizar($id, $request->meta_semestre_1, $request->meta_semestre_2);
 
         modalSucesso('Informações atualizadas com sucesso!');
         return redirect()->route('admin.gestao-metas.vendedores.index');

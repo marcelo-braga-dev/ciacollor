@@ -87,7 +87,7 @@ class User extends Authenticatable
             ]);
 
         event(new Registered($user));
-        (new MetaVendas())->atualizar($user->id, $request->meta);
+        (new MetaVendas())->atualizar($user->id, $request->meta_semestre_1, $request->meta_semestre_2);
     }
 
     public function createGerenteRegional($request, $funcao)
@@ -104,7 +104,7 @@ class User extends Authenticatable
             ]);
 
         event(new Registered($user));
-        (new MetaVendas())->atualizar($user->id, $request->meta);
+        (new MetaVendas())->atualizar($user->id, $request->meta_semestre_1, $request->meta_semestre_2);
     }
 
     public function getUser(int $id) //possui Service
@@ -123,7 +123,7 @@ class User extends Authenticatable
                 'superior' => $request->gerente,
             ]);
 
-        (new MetaVendas())->atualizar($id, $request->meta);
+        (new MetaVendas())->atualizar($id, $request->meta_semestre_1, $request->meta_semestre_2);
     }
 
     public function getNomes()

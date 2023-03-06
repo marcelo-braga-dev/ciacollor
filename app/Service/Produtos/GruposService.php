@@ -16,11 +16,11 @@ class GruposService
 
     public function faturamento($gerenteAtual, $request)
     {
-        $this->getGrupo($gerenteAtual, $request);
+        $items = $this->getGrupo($gerenteAtual, $request);
 
         $dados = [];
 
-        foreach ($this->grupos as $item) {
+        foreach ($items as $item) {
 
             $faturamento = $this->getFaturamentos($item['cod'], $request, $gerenteAtual);
 
@@ -38,7 +38,7 @@ class GruposService
         $gerenteAtual ? $querySun->where('gerente_regional', $gerenteAtual) : '';
         $request->mes ? $querySun->whereMonth('data_cadastro', $request->mes) : '';
 
-        return $querySun->where('cod_grupo', $id)->sum($campo);
+        return $querySun->where('cod_grupo', $id)->withSum('',['litros','valor_total']);
     }
 
     public function filtro(mixed $gerenteAtual, $request, $query): void
@@ -55,8 +55,10 @@ class GruposService
 
     public function getFaturamentos($id, $request, $gerenteAtual): array
     {
+
         $faturamento['comparar']['faturamento'][$id] =
             $this->buscaValor($request->ano_comparar, $id, 'valor_total', $request, $gerenteAtual, 'vendedor');
+
         $faturamento['comparar']['litros'][$id] =
             $this->buscaValor($request->ano_comparar, $id, 'litros', $request, $gerenteAtual, 'vendedor');
 
@@ -86,7 +88,7 @@ class GruposService
         return $dados;
     }
 
-    public function getGrupo(mixed $gerenteAtual, $request): void
+    public function getGrupo(mixed $gerenteAtual, $request)
     {
         $query = (new Produtos())->newQuery()
             ->distinct();
@@ -94,7 +96,7 @@ class GruposService
         $this->filtro($gerenteAtual, $request, $query);
 
         // coleta vendedores com produtos
-        $this->grupos = $query->get(['cod_grupo', 'grupo'])->transform(function ($e) {
+        return  $query->get(['cod_grupo', 'grupo'])->transform(function ($e) {
             return ['cod' => $e->cod_grupo, 'grupo' =>  $e->grupo];
         });
     }

@@ -54,8 +54,8 @@ abstract class FuncoesService implements FuncoesServiceInterface
             'superior_id' => $item->superior,
             'superior_nome' => $this->usuario[$item->superior]['nome'] ?? '',
             'data_cadastro' => date('d/m/y H:i', strtotime($item->created_at)),
-            'meta_anual' => convert_float_money($this->metas[$item->id] ?? ''),
-            'meta_anual_float' => $this->metas[$item->id] ?? 0,
+            'meta_semestre_1' => $this->metas[$item->id]['semestre_1'] ?? 0,
+            'meta_semestre_2' => $this->metas[$item->id]['semestre_2'] ?? 0,
         ];
     }
 }
