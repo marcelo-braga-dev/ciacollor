@@ -38,9 +38,13 @@ class MetaVendas extends Model
         return $dados;
     }
 
-    public function metaAnual()
+    public function metas($periodo = null)
     {
-        return $this->newQuery()->sum('anual');
+        if ($periodo == 1) return $this->newQuery()->sum('semestre_1');
+        if ($periodo == 2) return $this->newQuery()->sum('semestre_2');
+        return
+            $this->newQuery()->sum('semestre_1') +
+            $this->newQuery()->sum('semestre_2');
     }
 
     public function metaAnualGerente()

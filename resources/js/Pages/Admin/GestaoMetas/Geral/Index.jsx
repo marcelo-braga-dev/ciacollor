@@ -7,11 +7,13 @@ import axios from "axios";
 import {useEffect, useState} from "react";
 
 export default function ({vendedores, gerentes}) {
-    const {data, setData} = useForm();
+    const {data, setData} = useForm({
+        periodo: 'ano'
+    });
 
-    const [metaAnual, setMetaAnual] = useState();
-    const [vendasComparar, setVendasComparar] = useState();
-    const [vendasAnalisar, setVendasAnalisar] = useState();
+    const [metaAnual, setMetaAnual] = useState(0);
+    const [vendasComparar, setVendasComparar] = useState(0);
+    const [vendasAnalisar, setVendasAnalisar] = useState(0);
     const [listaVendedores, setListaVendedores] = useState(vendedores);
     const [loading, setLoading] = useState(false);
 
@@ -20,7 +22,7 @@ export default function ({vendedores, gerentes}) {
         setLoading(true)
         axios.post(route('admin.gestao-metas.filtro', {...data, [key]: valor}))
             .then((response) => {
-                setMetaAnual(response.data.meta_anual)
+                setMetaAnual(response.data.meta)
                 setVendasAnalisar(response.data.vendas_analisar)
                 setVendasComparar(response.data.vendas_comparar)
                 if (response.data.vendedores) setListaVendedores(response.data.vendedores)
@@ -34,7 +36,7 @@ export default function ({vendedores, gerentes}) {
     useEffect(() => {
         axios.post(route('admin.gestao-metas.filtro', {...data}))
             .then((response) => {
-                setMetaAnual(response.data.meta_anual)
+                setMetaAnual(response.data.meta)
                 setVendasAnalisar(response.data.vendas_analisar)
                 setVendasComparar(response.data.vendas_comparar)
             })
@@ -91,10 +93,10 @@ export default function ({vendedores, gerentes}) {
                         <div className="col-12">
                             <label className="form-label">Período</label>
                             <TextField size="small" select fullWidth defaultValue=""
-                                       onChange={e => buscarDados('ano_comparar', e.target.value)}>
-                                <MenuItem value="1_sem">1° Semestre</MenuItem>
-                                <MenuItem value="2_sem">2° Semestre</MenuItem>
-                                <MenuItem value="anual">Anual</MenuItem>
+                                       onChange={e => buscarDados('periodo', e.target.value)}>
+                                <MenuItem value="1">1° Semestre</MenuItem>
+                                <MenuItem value="2">2° Semestre</MenuItem>
+                                <MenuItem value="ano">Anual</MenuItem>
                             </TextField>
                         </div>
                         <div className="col-12 mt-3">
@@ -130,29 +132,29 @@ export default function ({vendedores, gerentes}) {
                 </div>
                 <div className="col-8">
                     <div className="row mb-3">
-                        <div className="col-md-5 bg-secundary text-white p-2 rounded mx-3 px-3">
+                        <div className="col-md-5 bg-primary text-white p-2 rounded mx-3 px-3">
                             <small className="d-block font-weight-bold">META PREVISTA ANO {data.ano_analise}:</small>
                             R$ {metaAnual?.toLocaleString()}
                         </div>
-                        <div className="col-md-5 bg-secundary text-white p-2 rounded mx-3 px-3">
+                        <div className="col-md-5 bg-primary text-white p-2 rounded mx-3 px-3">
                             <small className="d-block font-weight-bold">VENDA ACUMULADA {data.ano_analise}:</small>
                             R$ {vendasComparar && vendasComparar['total']?.toLocaleString()}
                         </div>
                     </div>
 
                     <div className="row mb-3">
-                        <div className="col-md-5 bg-secundary text-white p-2 rounded mx-3 px-3">
+                        <div className="col-md-5 bg-primary text-white p-2 rounded mx-3 px-3">
                             <small className="d-block font-weight-bold">META REALIZADA:</small>
                             {round(vendasComparar?.total / metaAnual, 3)}%
                         </div>
-                        <div className="col-md-5 bg-secundary text-white p-2 rounded mx-3 px-3">
+                        <div className="col-md-5 bg-primary text-white p-2 rounded mx-3 px-3">
                             <small className="d-block font-weight-bold">VALOR PARA ATINGIR META:</small>
                             R$ {vendasComparar && (metaAnual - vendasComparar['total']).toLocaleString()}
                         </div>
                     </div>
 
                     <div className="row">
-                        <div className="col-md-5 bg-secundary text-white p-2 rounded mx-3 px-3">
+                        <div className="col-md-5 bg-primary text-white p-2 rounded mx-3 px-3">
                             <small className="d-block font-weight-bold">% PARA ATINGIR META:</small>
                             {round((Math.abs(vendasComparar?.total / metaAnual)), 3)} %
                         </div>
@@ -168,7 +170,7 @@ export default function ({vendedores, gerentes}) {
                         <thead>
                         <tr className="text-center">
                             <th className="bg-primary">Mês</th>
-                            <th className="bg-primary">Meta {data.ano_analise}</th>
+                            <th className="bg-primary">Meta {data.periodo === 'ano' ? 'Ano' : (data.periodo === 1 ? '1° Semestre' : '2° Semestre') }</th>
                             <th className="bg-primary">Vendas {data.ano_analise}</th>
                             <th className="bg-primary">Vendas {data.ano_comparar}</th>
                             <th className="bg-primary">Vendas {data.ano_analise} X<br/> Vendas {data.ano_comparar}</th>

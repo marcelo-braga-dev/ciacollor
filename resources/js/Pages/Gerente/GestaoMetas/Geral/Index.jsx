@@ -9,7 +9,7 @@ import {useEffect, useState} from "react";
 export default function ({vendedores}) {
     const {data, setData} = useForm();
 
-    const [metaAnual, setMetaAnual] = useState();
+    const [meta, setMeta] = useState();
     const [vendasComparar, setVendasComparar] = useState();
     const [vendasAnalisar, setVendasAnalisar] = useState();
     const [loading, setLoading] = useState(false);
@@ -19,20 +19,20 @@ export default function ({vendedores}) {
         setLoading(true)
         axios.post(route('gerente.gestao-metas.filtro', {...data, [key]: valor}))
             .then((response) => {
-                setMetaAnual(response.data.meta_anual)
+                setMeta(response.data.meta)
                 setVendasAnalisar(response.data.vendas_analisar)
                 setVendasComparar(response.data.vendas_comparar)
                 setLoading(false)
             })
     }
 
-    const metaAno = round(metaAnual / 12, 2)
-    const metaAnoFloat = round(metaAnual / 12, 2)
+    const metaAno = round(meta / 12, 2)
+    const metaAnoFloat = round(meta / 12, 2)
 
     useEffect(() => {
         axios.post(route('gerente.gestao-metas.filtro', {...data}))
             .then((response) => {
-                setMetaAnual(response.data.meta_anual)
+                setMeta(response.data.meta_anual)
                 setVendasAnalisar(response.data.vendas_analisar)
                 setVendasComparar(response.data.vendas_comparar)
             })
@@ -109,31 +109,31 @@ export default function ({vendedores}) {
                 </div>
                 <div className="col-8">
                     <div className="row mb-3">
-                        <div className="col-md-5 bg-secundary text-white p-2 rounded mx-3 px-3">
+                        <div className="col-md-5 bg-primary text-white p-2 rounded mx-3 px-3">
                             <small className="d-block font-weight-bold">META PREVISTA ANO {data.ano_analise}:</small>
-                            {convertMoney(metaAnual)}
+                            {convertMoney(meta)}
                         </div>
-                        <div className="col-md-5 bg-secundary text-white p-2 rounded mx-3 px-3">
+                        <div className="col-md-5 bg-primary text-white p-2 rounded mx-3 px-3">
                             <small className="d-block font-weight-bold">VENDA ACUMULADA {data.ano_analise}:</small>
                             {vendasComparar && convertMoney(vendasComparar['total'])}
                         </div>
                     </div>
 
                     <div className="row mb-3">
-                        <div className="col-md-5 bg-secundary text-white p-2 rounded mx-3 px-3">
+                        <div className="col-md-5 bg-primary text-white p-2 rounded mx-3 px-3">
                             <small className="d-block font-weight-bold">META REALIZADA:</small>
-                            {round(vendasComparar?.total / metaAnual, 3)}%
+                            {round(vendasComparar?.total / meta, 3)}%
                         </div>
-                        <div className="col-md-5 bg-secundary text-white p-2 rounded mx-3 px-3">
+                        <div className="col-md-5 bg-primary text-white p-2 rounded mx-3 px-3">
                             <small className="d-block font-weight-bold">VALOR PARA ATINGIR META:</small>
-                            {vendasComparar && convertMoney(metaAnual - vendasComparar['total'])}
+                            {vendasComparar && convertMoney(meta - vendasComparar['total'])}
                         </div>
                     </div>
 
                     <div className="row">
-                        <div className="col-md-5 bg-secundary text-white p-2 rounded mx-3 px-3">
+                        <div className="col-md-5 bg-primary text-white p-2 rounded mx-3 px-3">
                             <small className="d-block font-weight-bold">% PARA ATINGIR META:</small>
-                            {round((Math.abs(vendasComparar?.total / metaAnual)), 3)} %
+                            {round((Math.abs(vendasComparar?.total / meta)), 3)} %
                         </div>
                     </div>
 
@@ -141,7 +141,7 @@ export default function ({vendedores}) {
             </div>
 
             {loading ? loadingAnimation() : ''}
-            {metaAnual ? <>
+            {meta ? <>
                 <h6>Análise Vendas no Mês</h6>
                 <div className="table-responsive">
                     <table className="table table-bordered table-hover">
