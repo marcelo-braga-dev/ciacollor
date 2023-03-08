@@ -150,7 +150,7 @@ export default function ({usuarios}) {
                             <tr>
                                 <td>Ano A Comparar</td>
                                 <td>R$ {dadosTotais.comparar_faturado}</td>
-                                <td>{convertFloatToMoney(dadosTotais.comparar_litros, 2)}</td>
+                                <td>{convertFloatToMoney(dadosTotais.comparar_litros, 0)}</td>
                                 <td>R$ {dadosTotais.comparar_ticket}</td>
                             </tr>
                             <tr>

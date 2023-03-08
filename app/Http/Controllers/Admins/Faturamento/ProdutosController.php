@@ -15,7 +15,7 @@ class ProdutosController extends Controller
     public function index(Request $request)
     {
         $usuarios = (new UsuariosService())->todosUsuarios();
-
+//print_pre((new GruposService())->faturamento(null, $request));
         return Inertia::render('Admin/Faturamento/Produtos/Index',
             compact( 'usuarios'));
     }

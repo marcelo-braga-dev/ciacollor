@@ -6,14 +6,6 @@ use App\Models\Produtos;
 
 class GruposService
 {
-    private $grupos;
-    public function getGrupos()
-    {
-        return (new Produtos())->newQuery()
-            ->distinct()
-            ->get(['cod_grupo', 'grupo']);
-    }
-
     public function faturamento($gerenteAtual, $request)
     {
         $items = $this->getGrupo($gerenteAtual, $request);
@@ -21,7 +13,6 @@ class GruposService
         $dados = [];
 
         foreach ($items as $item) {
-
             $faturamento = $this->getFaturamentos($item['cod'], $request, $gerenteAtual);
 
             $dados = $this->getDados($item['cod'], $faturamento, $dados, $item['grupo']);
@@ -38,7 +29,7 @@ class GruposService
         $gerenteAtual ? $querySun->where('gerente_regional', $gerenteAtual) : '';
         $request->mes ? $querySun->whereMonth('data_cadastro', $request->mes) : '';
 
-        return $querySun->where('cod_grupo', $id)->withSum('',['litros','valor_total']);
+        return $querySun->where('cod_grupo', $id)->sum($campo);
     }
 
     public function filtro(mixed $gerenteAtual, $request, $query): void
@@ -55,7 +46,6 @@ class GruposService
 
     public function getFaturamentos($id, $request, $gerenteAtual): array
     {
-
         $faturamento['comparar']['faturamento'][$id] =
             $this->buscaValor($request->ano_comparar, $id, 'valor_total', $request, $gerenteAtual, 'vendedor');
 
@@ -96,8 +86,8 @@ class GruposService
         $this->filtro($gerenteAtual, $request, $query);
 
         // coleta vendedores com produtos
-        return  $query->get(['cod_grupo', 'grupo'])->transform(function ($e) {
-            return ['cod' => $e->cod_grupo, 'grupo' =>  $e->grupo];
+        return $query->get(['cod_grupo', 'grupo'])->transform(function ($e) {
+            return ['cod' => $e->cod_grupo, 'grupo' => $e->grupo];
         });
     }
 
