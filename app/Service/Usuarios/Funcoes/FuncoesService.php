@@ -9,17 +9,21 @@ abstract class FuncoesService implements FuncoesServiceInterface
 {
     private $usuario;
     private $metas;
+    private $funcao;
 
     public function __construct()
     {
         $this->usuario = (new User())->getNomes();
-        $this->metas = (new MetaVendas())->getMetas();
+        $this->metas = [];
     }
 
-    protected function dados($items): array
+    protected function dados($items, $funcao = null): array
     {
         $dados = [];
         foreach ($items as $item) {
+            if ($funcao) $this->metas[$item->id] = (new MetaVendas())->metaAnualGerente($item['id']);
+            else $this->metas = (new MetaVendas())->getMetas();
+
             $dados[] = $this->dadosCompleto($item);
         }
         return $dados;
@@ -43,7 +47,7 @@ abstract class FuncoesService implements FuncoesServiceInterface
         return $dados;
     }
 
-    private function dadosCompleto($item)
+    private function dadosCompleto($item): array
     {
         return [
             'id' => $item->id,

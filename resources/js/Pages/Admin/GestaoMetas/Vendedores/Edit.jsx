@@ -2,11 +2,13 @@ import Layout from "@/Layouts/Admin/Layout";
 import {TextField} from "@mui/material";
 import {useForm} from "@inertiajs/react";
 import {router} from "@inertiajs/react";
+import TextFieldMoney from "@/Components/Inputs/TextFieldMoney";
+import convertFloatToMoney from "@/utils/convertFloatToMoney";
 
 export default function ({dados}) {
     const {data, setData} = useForm({
-        meta_semestre_1: dados.meta_semestre_1,
-        meta_semestre_2: dados.meta_semestre_2
+        meta_semestre_1: convertFloatToMoney(dados.meta_semestre_1),
+        meta_semestre_2: convertFloatToMoney(dados.meta_semestre_2)
     })
 
     function submit(e) {
@@ -29,12 +31,12 @@ export default function ({dados}) {
             <form onSubmit={submit}>
                 <div className="row">
                     <div className="col-md-3 mb-4">
-                        <TextField type="number" label="Meta 1° Semestre" required fullWidth value={data.meta_semestre_1}
-                                   onChange={e => setData('meta_semestre_1', e.target.value)}/>
+                        <TextFieldMoney label="Meta 1° Semestre" index="meta_semestre_1" value={data.meta_semestre_1}
+                                        setData={setData} required/>
                     </div>
                     <div className="col-md-3 mb-4">
-                        <TextField type="number" label="Meta 2° Semestre" required fullWidth value={data.meta_semestre_2}
-                                   onChange={e => setData('meta_semestre_2', e.target.value)}/>
+                        <TextFieldMoney label="Meta 2° Semestre" index="meta_semestre_2" value={data.meta_semestre_2}
+                                        setData={setData} required/>
                     </div>
                 </div>
                 <div className="row justify-content-center">

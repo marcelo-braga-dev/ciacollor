@@ -1,4 +1,5 @@
 import Layout from "@/Layouts/Admin/Layout";
+import convertFloatToMoney from "@/utils/convertFloatToMoney";
 
 export default function ({usuarios}) {
     return (
@@ -14,16 +15,16 @@ export default function ({usuarios}) {
                 </div>
             </div>
             <div className="table-responsive">
-                <table className="table">
+                <table className="table table-sm text-sm">
                     <thead>
                     <tr>
-                        <th className="col-1">Código</th>
-                        <th>Nome</th>
-                        <th>Gerente</th>
-                        <th>Meta 1° Semestre</th>
-                        <th>Meta 2° Semestre</th>
-                        <th>Meta Anual</th>
-                        <th></th>
+                        <th className="col-1">Cód.</th>
+                        <th className="col-1">Nome</th>
+                        <th className="col-1">Gerente</th>
+                        <th className="col-1">Meta <br/>1° Semestre</th>
+                        <th className="col-1">Meta <br/>2° Semestre</th>
+                        <th className="col-1">Meta <br/>Anual</th>
+                        <th className="col-1"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -31,11 +32,11 @@ export default function ({usuarios}) {
                         return (
                             <tr key={index}>
                                 <td className="text-center">{usuario.codigo}</td>
-                                <td><b>{usuario.nome}</b></td>
-                                <td>{usuario.superior_nome}</td>
-                                <td>{usuario.meta_semestre_1 && <>R$ {usuario.meta_semestre_1}</>}</td>
-                                <td>{usuario.meta_semestre_2 && <>R$ {usuario.meta_semestre_2}</>}</td>
-                                <td>{usuario.meta_semestre_1 && usuario.meta_semestre_1 + usuario.meta_semestre_2}</td>
+                                <td className="text-wrap"><b>{usuario.nome}</b></td>
+                                <td className="text-wrap">{usuario.superior_nome}</td>
+                                <td className="text-wrap">{usuario.meta_semestre_1 && <>R$ {convertFloatToMoney(usuario.meta_semestre_1)}</>}</td>
+                                <td className="text-wrap">{usuario.meta_semestre_2 && <>R$ {convertFloatToMoney(usuario.meta_semestre_2)}</>}</td>
+                                <td className="text-wrap">{usuario.meta_semestre_1 && convertFloatToMoney(usuario.meta_semestre_1 + usuario.meta_semestre_2)}</td>
                                 <td>
                                     <a className="btn btn-link text-dark p-0 m-0"
                                     href={route('admin.usuarios.vendedores.show', usuario.id)}>Ver</a>

@@ -6,6 +6,7 @@ import axios from "axios";
 import {useEffect, useState} from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import Backdrop from "@mui/material/Backdrop";
+import convertFloatToMoney from "@/utils/convertFloatToMoney";
 
 export default function ({usuarios}) {
     const {data, setData} = useForm({})
@@ -149,13 +150,13 @@ export default function ({usuarios}) {
                             <tr>
                                 <td>Ano A Comparar</td>
                                 <td>R$ {dadosTotais.comparar_faturado}</td>
-                                <td>{dadosTotais.comparar_litros}</td>
+                                <td>{convertFloatToMoney(dadosTotais.comparar_litros, 2)}</td>
                                 <td>R$ {dadosTotais.comparar_ticket}</td>
                             </tr>
                             <tr>
                                 <td>Ano Análise</td>
                                 <td>R$ {dadosTotais.analisar_faturado}</td>
-                                <td>{dadosTotais.analisar_litros}</td>
+                                <td>{convertFloatToMoney(dadosTotais.analisar_litros, 0)}</td>
                                 <td>R$ {dadosTotais.analisar_ticket}</td>
                             </tr>
                             <tr>
@@ -189,9 +190,9 @@ export default function ({usuarios}) {
                                 <tr key={index} className="text-center">
                                     <td className="text-start"><b>{item.vendedor}</b></td>
                                     <td>R$ {item.comparar.faturamento}</td>
-                                    <td>{item.comparar.litros}</td>
+                                    <td>{convertFloatToMoney(item.comparar.litros, 0)}</td>
                                     <td>R$ {item.analizar.faturamento}</td>
-                                    <td>{item.analizar.litros}</td>
+                                    <td>{convertFloatToMoney(item.analizar.litros, 0)}</td>
                                 </tr>
                             )
                         })}

@@ -10,7 +10,7 @@ class GerenteRegionalUsuariosService extends FuncoesService
     {
         $users = (new User())->getGerentes();
 
-        return $this->dados($users);
+        return $this->dados($users, 'gerente');
     }
 
     public function getNomes()

@@ -47,15 +47,20 @@ class MetaVendas extends Model
             $this->newQuery()->sum('semestre_2');
     }
 
-    public function metaAnualGerente()
+    public function metaAnualGerente($id = null)
     {
-        $vendedores = (new User())->getUserPeloSuperior(id_usuario_atual());
+        $id = $id ?? id_usuario_atual();
+
+        $vendedores = (new User())->getUserPeloSuperior($id);
 
         $query = (new MetaVendas())->newQuery();
+
         foreach ($vendedores as $vendedor) {
             $query->orWhere('users_id', $vendedor['id']);
         }
-
-        return $vendedores->count() ? $query->sum('anual') : 0;
+        return [
+            'semestre_1' => $query->sum('semestre_1'),
+            'semestre_2' => $query->sum('semestre_2'),
+        ];
     }
 }

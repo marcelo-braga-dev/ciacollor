@@ -1,4 +1,5 @@
 import Layout from "@/Layouts/Admin/Layout";
+import convertFloatToMoney from "@/utils/convertFloatToMoney";
 
 export default function ({usuarios}) {
     return (
@@ -14,13 +15,14 @@ export default function ({usuarios}) {
                 </div>
             </div>
             <div className="table-responsive">
-                <table className="table">
+                <table className="table table-sm text-sm">
                     <thead>
                     <tr>
-                        <th className="col-1">Código</th>
+                        <th className="col-1">Cód.</th>
                         <th>Nome</th>
-                        <th>Meta Anual</th>
-                        <th className="col-1">Cadastro</th>
+                        <th>Meta<br/> 1°Semestre</th>
+                        <th>Meta<br/> 2° Semestre</th>
+                        <th className="col-1">Meta <br/>Anual</th>
                         <th className="col-2"></th>
                     </tr>
                     </thead>
@@ -29,11 +31,12 @@ export default function ({usuarios}) {
                         return (
                             <tr key={index}>
                                 <td className="text-center">{usuario.codigo}</td>
-                                <td><b>{usuario.nome}</b></td>
-                                <td>{usuario.meta_anual && <>R$ {usuario.meta_anual}</>}</td>
-                                <td>{usuario.data_cadastro}</td>
+                                <td className="text-wrap"><b>{usuario.nome}</b></td>
+                                <td className="text-wrap text-">R$ {usuario.meta_semestre_1 && <>{convertFloatToMoney(usuario.meta_semestre_1)}</>}</td>
+                                <td className="text-wrap">R$ {usuario.meta_semestre_2 && <>{convertFloatToMoney(usuario.meta_semestre_2)}</>}</td>
+                                <td className="text-wrap">R$ {convertFloatToMoney(usuario.meta_semestre_1 + usuario.meta_semestre_2)}</td>
                                 <td className="text-center">
-                                    <a className="btn btn-link text-dark p-0 m-0"
+                                    <a className="btn btn-primary btn-sm px-3"
                                     href={route('admin.usuarios.gerente-regional.show', usuario.id)}>Ver</a>
                                 </td>
                             </tr>
