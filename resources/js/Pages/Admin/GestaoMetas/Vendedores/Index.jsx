@@ -1,4 +1,5 @@
 import Layout from "@/Layouts/Admin/Layout";
+import convertFloatToMoney from "@/utils/convertFloatToMoney";
 
 export default function ({usuarios}) {
     return (
@@ -28,8 +29,8 @@ export default function ({usuarios}) {
                                 <td className="text-center">{usuario.codigo}</td>
                                 <td className="text-wrap"><b>{usuario.nome}</b></td>
                                 <td className="text-wrap">{usuario.superior_nome}</td>
-                                <td className="text-wrap">{usuario.meta_semestre_1 ? <>R$ {usuario.meta_semestre_1}</> : '-'}</td>
-                                <td className="text-wrap">{usuario.meta_semestre_2 ? <>R$ {usuario.meta_semestre_2}</> : '-'}</td>
+                                <td className="text-wrap">{usuario.meta_semestre_1 ? <>R$ {convertFloatToMoney(usuario.meta_semestre_1)}</> : '-'}</td>
+                                <td className="text-wrap">{usuario.meta_semestre_2 ? <>R$ {convertFloatToMoney(usuario.meta_semestre_2)}</> : '-'}</td>
                                 <td className="text-wrap">
                                     {usuario.meta_semestre_1 && usuario.meta_semestre_2 ?
                                         <>R$ {usuario.meta_semestre_1 + usuario.meta_semestre_2}</> : '-'}</td>
