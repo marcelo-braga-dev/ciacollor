@@ -9,15 +9,15 @@ export default function ({usuarios}) {
                 </div>
             </div>
             <div className="table-responsive">
-                <table className="table">
+                <table className="table table-sm text-sm">
                     <thead>
                     <tr>
                         <th className="col-1">Código</th>
                         <th>Nome</th>
                         <th>Gerente Regional</th>
-                        <th>Meta 1° Semestre</th>
-                        <th>Meta 2° Semestre</th>
-                        <th>Meta Anual</th>
+                        <th>Meta <br/>1° Semestre</th>
+                        <th>Meta <br/>2° Semestre</th>
+                        <th>Meta <br/>Anual</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -26,11 +26,11 @@ export default function ({usuarios}) {
                         return (
                             <tr key={index}>
                                 <td className="text-center">{usuario.codigo}</td>
-                                <td><b>{usuario.nome}</b></td>
-                                <td>{usuario.superior_nome}</td>
-                                <td>{usuario.meta_semestre_1 ? <>R$ {usuario.meta_semestre_1}</> : '-'}</td>
-                                <td>{usuario.meta_semestre_2 ? <>R$ {usuario.meta_semestre_2}</> : '-'}</td>
-                                <td>
+                                <td className="text-wrap"><b>{usuario.nome}</b></td>
+                                <td className="text-wrap">{usuario.superior_nome}</td>
+                                <td className="text-wrap">{usuario.meta_semestre_1 ? <>R$ {usuario.meta_semestre_1}</> : '-'}</td>
+                                <td className="text-wrap">{usuario.meta_semestre_2 ? <>R$ {usuario.meta_semestre_2}</> : '-'}</td>
+                                <td className="text-wrap">
                                     {usuario.meta_semestre_1 && usuario.meta_semestre_2 ?
                                         <>R$ {usuario.meta_semestre_1 + usuario.meta_semestre_2}</> : '-'}</td>
                                 <td>
