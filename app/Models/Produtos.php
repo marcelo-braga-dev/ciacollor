@@ -54,6 +54,7 @@ class Produtos extends Model
                     'cod_grupo' => $item['grupo']['cod_grupo'],
                     'grupo' => $item['grupo']['grupo'],
                     'data_cadastro' => $item['produto']['data_cadastro'],
+                    'prazo_medio' => $item['produto']['prazo_medio'],
 
                     'valor_sugerido' => $item['valores']['sugerido'],
                     'desconto' => $item['valores']['desconto'],

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admins\Analises;
 
 use App\Http\Controllers\Controller;
 use App\Models\Produtos;
+use App\Service\Analises\PrazoMedioService;
 use App\Service\Produtos\FaturamentoService;
 use App\Service\Usuarios\UsuariosService;
 use Illuminate\Http\Request;
@@ -21,7 +22,7 @@ class PrazoMedioController extends Controller
 
     public function filtrar(Request $request)
     {
-        return (new FaturamentoService())->faturamentoVendedor($request);
+        return (new PrazoMedioService())->calcular($request);
     }
 
     public function clientes()

@@ -6,32 +6,34 @@ import axios from "axios";
 import {useEffect, useState} from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import Backdrop from "@mui/material/Backdrop";
+import convertFloatToMoney from "@/utils/convertFloatToMoney";
 
 export default function ({usuarios}) {
     const {data, setData} = useForm({})
     const [dadosTable, setDadosTable] = useState([]);
-    const [dadosTotais, setDadosTotais] = useState([]);
+    const [media, setMedia] = useState([]);
     const [clientes, setClientes] = useState([]);
     const [loading, setLoading] = useState(false);
 
     function buscarDados(key, valor) {
         setData(key, valor)
         setLoading(true)
-        axios.post(route('admin.analise.prazo-medio-filtro', {...data, [key]: valor}))
+        axios.post(route('admin.analise.desconto-medio-filtro', {...data, [key]: valor}))
             .then((response) => {
                 setDadosTable(response.data.tabela)
-                setDadosTotais(response.data.totais)
+                setMedia(response.data.media)
+
                 setLoading(false)
             })
     }
 
     useEffect(() => {
-        axios.post(route('admin.analise.prazo-medio-filtro', {...data}))
+        axios.post(route('admin.analise.desconto-medio-filtro', {...data}))
             .then((response) => {
                 setDadosTable(response.data.tabela)
-                setDadosTotais(response.data.totais)
+                setMedia(response.data.media)
             })
-        axios.post(route('admin.analise.prazo-medio-clientes', {...data}))
+        axios.post(route('admin.analise.desconto-medio-clientes', {...data}))
             .then((response) => {
                 setClientes(response.data)
             })
@@ -82,7 +84,7 @@ export default function ({usuarios}) {
                 <div className="col-md-3 text-center mx-4">
                     <div className="bg-success p-3 rounded text-white">
                         <h6>Desconto Médio</h6>
-                        <h3 className="d-block">%</h3>
+                        <h3 className="d-block">{convertFloatToMoney(media, 1)}%</h3>
                     </div>
                 </div>
             </div>
@@ -131,7 +133,7 @@ export default function ({usuarios}) {
             {loading ? loadingAnimation() : ''}
             {dadosTable.length ? <>
                 <div className="table-responsive mt-4">
-                    <table className="table mt-4 table-bordered table-hover">
+                    <table className="table table-sm text-sm mt-4 table-striped table-bordered table-hover">
                         <thead>
                         <tr>
                             <th>Vendedor</th>
@@ -146,12 +148,12 @@ export default function ({usuarios}) {
                         {dadosTable.map((item, index) => {
                             return (
                                 <tr key={index} className="text-center">
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td className="text-wrap text-start">{item.vendedor}</td>
+                                    <td className="text-wrap text-start">{item.cliente}</td>
+                                    <td>R$ {convertFloatToMoney(item.valor_sugerido)}</td>
+                                    <td>R$ {convertFloatToMoney(item.valor_desconto)}</td>
+                                    <td>{convertFloatToMoney(item.desconto, 1)} %</td>
+                                    <td>R$ {convertFloatToMoney(item.valor_total)}</td>
                                 </tr>
                             )
                         })}

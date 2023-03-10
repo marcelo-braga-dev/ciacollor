@@ -4,13 +4,12 @@ import MenuItem from "@mui/material/MenuItem";
 import {useForm} from "@inertiajs/react";
 import axios from "axios";
 import {useEffect, useState} from "react";
-import CircularProgress from "@mui/material/CircularProgress";
-import Backdrop from "@mui/material/Backdrop";
+import convertFloatToMoney from "@/utils/convertFloatToMoney";
 
 export default function ({usuarios}) {
     const {data, setData} = useForm({})
     const [dadosTable, setDadosTable] = useState([]);
-    const [dadosTotais, setDadosTotais] = useState([]);
+    const [media, setMedia] = useState([]);
     const [clientes, setClientes] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -20,7 +19,7 @@ export default function ({usuarios}) {
         axios.post(route('admin.analise.prazo-medio-filtro', {...data, [key]: valor}))
             .then((response) => {
                 setDadosTable(response.data.tabela)
-                setDadosTotais(response.data.totais)
+                setMedia(response.data.media)
                 setLoading(false)
             })
     }
@@ -29,7 +28,7 @@ export default function ({usuarios}) {
         axios.post(route('admin.analise.prazo-medio-filtro', {...data}))
             .then((response) => {
                 setDadosTable(response.data.tabela)
-                setDadosTotais(response.data.totais)
+                setMedia(response.data.media)
             })
         axios.post(route('admin.analise.prazo-medio-clientes', {...data}))
             .then((response) => {
@@ -82,7 +81,7 @@ export default function ({usuarios}) {
                 <div className="col-md-3 text-center mx-4">
                     <div className="bg-success p-3 rounded text-white">
                         <h6>Prazo Médio</h6>
-                        <h3 className="d-block">0</h3>
+                        <h3 className="d-block">{convertFloatToMoney(media, 0)}</h3>
                     </div>
                 </div>
             </div>
@@ -131,7 +130,7 @@ export default function ({usuarios}) {
             {loading ? loadingAnimation() : ''}
             {dadosTable.length ? <>
                 <div className="table-responsive mt-4">
-                    <table className="table mt-4 table-bordered table-hover">
+                    <table className="table table-sm text-sm mt-4 table-striped table-bordered table-hover">
                         <thead>
                         <tr>
                             <th>Vendedor</th>
@@ -144,14 +143,13 @@ export default function ({usuarios}) {
                         {dadosTable.map((item, index) => {
                             return (
                                 <tr key={index} className="text-center">
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td className="text-wrap text-start">{item.vendedor}</td>
+                                    <td className="text-wrap text-start">{item.cliente}</td>
+                                    <td>R$ {convertFloatToMoney(item.valor)}</td>
+                                    <td>{convertFloatToMoney(item.prazo, 0)}</td>
                                 </tr>
                             )
                         })}
-
                         </tbody>
                     </table>
                 </div>

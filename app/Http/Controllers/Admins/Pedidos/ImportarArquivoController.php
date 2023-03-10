@@ -23,7 +23,7 @@ class ImportarArquivoController extends Controller
         $dados = (new ImportarArquivoService())->dados($request);
 
         $dadosSeparados = (new DadosImportarProdutosService())->executar($dados);
-        ini_set('max_execution_time', 6000);
+        ini_set('max_execution_time', 10000);
         foreach ($dadosSeparados as $item) {
             (new Produtos())->create($item);
         }
