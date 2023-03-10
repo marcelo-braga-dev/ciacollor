@@ -36,7 +36,8 @@ class DescontoMedioService
                 'vendedor',
                 DB::raw('AVG(desconto) as desconto,
                     SUM(valor_total) as valor_total,
-                    SUM(valor_sugerido) as valor_sugerido')
+                    SUM(valor_sugerido) as valor_sugerido,
+                    AVG(desconto/valor_sugerido) as media')
             )
             ->groupBy('cliente');
 
@@ -50,7 +51,7 @@ class DescontoMedioService
                     'cliente' => $dados->cliente,
                     'valor_sugerido' => $dados->valor_sugerido,
                     'valor_desconto' => $dados->desconto,
-                    'desconto' => $dados->desconto,
+                    'media' => $dados->media,
                     'valor_total' => 0,
                 ];
             });
@@ -58,9 +59,15 @@ class DescontoMedioService
         $media = (new Produtos())->newQuery()
             ->select(DB::raw('AVG(desconto) as media_desconto'))->first();
 
+        $mediaTotal = [];
+        foreach ($clientes as $cliente) {
+            $mediaTotal[] = $cliente['media'];
+        }
+        $mediaTotal = array_sum($mediaTotal) / count($mediaTotal);
+
         return [
             'tabela' => $clientes,
-            'media' => $media['media_desconto'] ?? 0
+            'media' => $mediaTotal
         ];
     }
 }

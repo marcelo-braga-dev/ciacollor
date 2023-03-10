@@ -84,7 +84,7 @@ export default function ({usuarios}) {
                 <div className="col-md-3 text-center mx-4">
                     <div className="bg-success p-3 rounded text-white">
                         <h6>Desconto Médio</h6>
-                        <h3 className="d-block">{convertFloatToMoney(media, 1)}%</h3>
+                        <h3 className="d-block">{convertFloatToMoney(media, 2)}%</h3>
                     </div>
                 </div>
             </div>
@@ -152,8 +152,8 @@ export default function ({usuarios}) {
                                     <td className="text-wrap text-start">{item.cliente}</td>
                                     <td>R$ {convertFloatToMoney(item.valor_sugerido)}</td>
                                     <td>R$ {convertFloatToMoney(item.valor_desconto)}</td>
-                                    <td>{convertFloatToMoney((item.desconto/item.valor_sugerido)*100, 1)} %</td>
-                                    <td>R$ {convertFloatToMoney(item.valor_sugerido-item.valor_desconto)}</td>
+                                    <td>{convertFloatToMoney((item.valor_desconto / item.valor_sugerido) * 100, 1)} %</td>
+                                    <td>R$ {convertFloatToMoney(item.valor_sugerido - item.valor_desconto)}</td>
                                 </tr>
                             )
                         })}
