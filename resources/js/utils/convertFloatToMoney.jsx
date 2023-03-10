@@ -1,6 +1,7 @@
 export default function convertFloatToMoney(valor, precisao = 2) {
-    return new Intl.NumberFormat('pt-BR', {minimumFractionDigits: precisao})
-        .format(valor)
+    return new Intl.NumberFormat('pt-BR', {
+        minimumFractionDigits: precisao, maximumFractionDigits: precisao
+    }).format(valor)
 }
 export const convertMoneyFloat = (valor) => {
     valor = valor.toString()

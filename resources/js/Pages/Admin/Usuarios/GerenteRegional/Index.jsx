@@ -32,7 +32,7 @@ export default function ({usuarios}) {
                             <tr key={index}>
                                 <td className="text-center">{usuario.codigo}</td>
                                 <td className="text-wrap"><b>{usuario.nome}</b></td>
-                                <td className="text-wrap text-">R$ {usuario.meta_semestre_1 && <>{convertFloatToMoney(usuario.meta_semestre_1)}</>}</td>
+                                <td className="text-wrap">R$ {usuario.meta_semestre_1 && <>{convertFloatToMoney(usuario.meta_semestre_1)}</>}</td>
                                 <td className="text-wrap">R$ {usuario.meta_semestre_2 && <>{convertFloatToMoney(usuario.meta_semestre_2)}</>}</td>
                                 <td className="text-wrap">R$ {convertFloatToMoney(usuario.meta_semestre_1 + usuario.meta_semestre_2)}</td>
                                 <td className="text-center">

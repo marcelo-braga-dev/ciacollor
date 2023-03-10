@@ -6,6 +6,7 @@ import axios from "axios";
 import {useEffect, useState} from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import Backdrop from "@mui/material/Backdrop";
+import convertFloatToMoney from "@/utils/convertFloatToMoney";
 
 export default function ({usuarios}) {
     const {data, setData} = useForm({})
@@ -148,28 +149,28 @@ export default function ({usuarios}) {
                             <tbody>
                             <tr>
                                 <td>Ano A Comparar</td>
-                                <td>R$ {dadosTotais.comparar_faturado}</td>
-                                <td>{dadosTotais.comparar_litros}</td>
-                                <td>R$ {dadosTotais.comparar_ticket}</td>
+                                <td>R$ {convertFloatToMoney(dadosTotais.comparar_faturado)}</td>
+                                <td>{convertFloatToMoney(dadosTotais.comparar_litros, 0)}</td>
+                                <td>R$ {convertFloatToMoney(dadosTotais.comparar_ticket)}</td>
                             </tr>
                             <tr>
                                 <td>Ano Análise</td>
-                                <td>R$ {dadosTotais.analisar_faturado}</td>
-                                <td>{dadosTotais.analisar_litros}</td>
-                                <td>R$ {dadosTotais.analisar_ticket}</td>
+                                <td>R$ {convertFloatToMoney(dadosTotais.analisar_faturado)}</td>
+                                <td>{convertFloatToMoney(dadosTotais.analisar_litros, 0)}</td>
+                                <td>R$ {convertFloatToMoney(dadosTotais.analisar_ticket)}</td>
                             </tr>
                             <tr>
                                 <td>Tx. de Crescimento Faturamento</td>
-                                <td>{dadosTotais.taxa_faturado}%</td>
-                                <td>{dadosTotais.taxa_litros}%</td>
-                                <td>{dadosTotais.taxa_ticket}%</td>
+                                <td>{convertFloatToMoney(dadosTotais.taxa_faturado)}%</td>
+                                <td>{convertFloatToMoney(dadosTotais.taxa_litros)}%</td>
+                                <td>{convertFloatToMoney(dadosTotais.taxa_ticket)}%</td>
                             </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
                 <div className="table-responsive">
-                    <table className="table table-bordered table-hover table-r">
+                    <table className="table table-bordered table-hover table-striped table-sm">
                         <thead>
                         <tr className="text-center">
                             <th className="bg-primary" rowSpan={2}>Grupo</th>
@@ -186,16 +187,16 @@ export default function ({usuarios}) {
                         <tbody>
                         {dadosTable.map((item, index) => {
                             return (
+                                item.grupo &&
                                 <tr key={index} className="text-center">
-                                    <td className="text-start"><b>{item.grupo}</b></td>
-                                    <td>R$ {item.comparar.faturamento}</td>
-                                    <td>{item.comparar.litros}</td>
-                                    <td>R$ {item.analizar.faturamento}</td>
-                                    <td>{item.analizar.litros}</td>
+                                    <td className="text-wrap text-start"><b>{item.grupo}</b></td>
+                                    <td>R$ {convertFloatToMoney(item?.comparar?.valor_total ?? 0)}</td>
+                                    <td>{convertFloatToMoney(item?.comparar?.litros ?? 0, 0)}</td>
+                                    <td>R$ {convertFloatToMoney(item?.analisar?.valor_total ?? 0)}</td>
+                                    <td>{convertFloatToMoney(item?.analisar?.litros ?? 0, 0)}</td>
                                 </tr>
                             )
                         })}
-
                         </tbody>
                     </table>
                 </div>
