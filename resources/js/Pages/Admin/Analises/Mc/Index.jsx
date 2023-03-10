@@ -4,8 +4,7 @@ import MenuItem from "@mui/material/MenuItem";
 import {useForm} from "@inertiajs/react";
 import axios from "axios";
 import {useEffect, useState} from "react";
-import CircularProgress from "@mui/material/CircularProgress";
-import Backdrop from "@mui/material/Backdrop";
+import convertFloatToMoney from "@/utils/convertFloatToMoney";
 
 export default function ({usuarios}) {
     const {data, setData} = useForm({})
@@ -17,7 +16,7 @@ export default function ({usuarios}) {
     function buscarDados(key, valor) {
         setData(key, valor)
         setLoading(true)
-        axios.post(route('admin.analise.prazo-medio-filtro', {...data, [key]: valor}))
+        axios.post(route('admin.analise.mc-filtro', {...data, [key]: valor}))
             .then((response) => {
                 setDadosTable(response.data.tabela)
                 setDadosTotais(response.data.totais)
@@ -26,12 +25,12 @@ export default function ({usuarios}) {
     }
 
     useEffect(() => {
-        axios.post(route('admin.analise.prazo-medio-filtro', {...data}))
+        axios.post(route('admin.analise.mc-filtro', {...data}))
             .then((response) => {
                 setDadosTable(response.data.tabela)
                 setDadosTotais(response.data.totais)
             })
-        axios.post(route('admin.analise.prazo-medio-clientes', {...data}))
+        axios.post(route('admin.analise.mc-clientes', {...data}))
             .then((response) => {
                 setClientes(response.data)
             })
@@ -132,7 +131,7 @@ export default function ({usuarios}) {
             {loading ? loadingAnimation() : ''}
             {dadosTable.length ? <>
                 <div className="table-responsive mt-4">
-                    <table className="table mt-4 table-bordered table-hover">
+                    <table className="table table-sm text-sm mt-4 table-striped table-bordered table-hover">
                         <thead>
                         <tr>
                             <th>Vendedor</th>
@@ -147,10 +146,10 @@ export default function ({usuarios}) {
                         {dadosTable.map((item, index) => {
                             return (
                                 <tr key={index} className="text-center">
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td className="text-wrap text-start">{item.vendedor}</td>
+                                    <td className="text-wrap text-start">{item.cliente}</td>
+                                    <td className="text-wrap text-start">{item.grupo}</td>
+                                    <td>R$ {convertFloatToMoney(item.valor)}</td>
                                     <td></td>
                                     <td></td>
                                 </tr>
