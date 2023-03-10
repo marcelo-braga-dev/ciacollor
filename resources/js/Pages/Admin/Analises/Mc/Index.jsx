@@ -150,8 +150,8 @@ export default function ({usuarios}) {
                                     <td className="text-wrap text-start">{item.cliente}</td>
                                     <td className="text-wrap text-start">{item.grupo}</td>
                                     <td>R$ {convertFloatToMoney(item.valor)}</td>
-                                    <td></td>
-                                    <td></td>
+                                    <td>{convertFloatToMoney(item.mc)}</td>
+                                    <td>{convertFloatToMoney(item.mc/item.valor)}%</td>
                                 </tr>
                             )
                         })}

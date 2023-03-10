@@ -152,8 +152,8 @@ export default function ({usuarios}) {
                                     <td className="text-wrap text-start">{item.cliente}</td>
                                     <td>R$ {convertFloatToMoney(item.valor_sugerido)}</td>
                                     <td>R$ {convertFloatToMoney(item.valor_desconto)}</td>
-                                    <td>{convertFloatToMoney(item.desconto, 1)} %</td>
-                                    <td>R$ {convertFloatToMoney(item.valor_total)}</td>
+                                    <td>{convertFloatToMoney((item.desconto/item.valor_sugerido)*100, 1)} %</td>
+                                    <td>R$ {convertFloatToMoney(item.valor_sugerido-item.valor_desconto)}</td>
                                 </tr>
                             )
                         })}

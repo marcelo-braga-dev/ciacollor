@@ -7,7 +7,7 @@ Route::get('/', function () {
     $auth = auth()->user()->funcao;
     switch ($auth) {
         case (new \App\src\Usuarios\Funcoes\AdminsUsuario())->getFuncao() :
-            return Inertia::render('Admin/Home');
+            return redirect()->route('admin.dashboard.geral.index');
         case (new \App\src\Usuarios\Funcoes\GerenteRegionalUsuario())->getFuncao() :
             return Inertia::render('Gerente/Home');
         default :

@@ -6,7 +6,7 @@ use App\Models\Produtos;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
-class McService
+class ProdutosService
 {
     private function filtroPeriodo($query, $ano, $mes)
     {
@@ -14,7 +14,7 @@ class McService
         $mes ? $query->whereMonth('data_cadastro', $mes) : null;
     }
 
-    public function filtroUsuario($query, $vendedor, $cliente, $gerente)
+    private function filtroUsuario($query, $vendedor, $cliente, $gerente)
     {
         if ($cliente) return $query->where('cliente', $cliente);
         if ($vendedor) return $query->where('vendedor', $vendedor);
@@ -32,38 +32,39 @@ class McService
 
         $query = (new Produtos())->newQuery()
             ->select(
-                'grupo', 'cod_grupo',
-                'cliente',
+                'cliente', 'produto',
                 'vendedor',
                 'gerente_regional',
-                DB::raw('
-                AVG(prazo_medio) as prazo,
-                SUM(valor_total) as valor,
-                (SUM(valor_total) - SUM(custo) - SUM(comissao) - SUM(frete)) as mc')
+                DB::raw('AVG(prazo_medio) as prazo, SUM(valor_total) as valor')
             )
-            ->groupBy('cod_grupo');
-
+            ->groupBy('cod_produto');
         $this->filtroPeriodo($query, $ano, $mes);
         $this->filtroUsuario($query, $vendedor, $cliente, $gerenteAtual);
-        $clientes = $query->get()
+        $clientes = $query->orderByDesc('valor')
+            ->limit(5)
+            ->get()
             ->transform(function ($dados) use ($nomes) {
                 return [
-                    'cod' => $dados->cod_grupo,
+                    'produto' => $dados->produto,
                     'cliente' => $dados->cliente,
-                    'vendedor' => $nomes[$dados->vendedor]['nome'],
-                    'grupo' => $dados->grupo,
                     'valor' => $dados->valor,
-                    'mc' => $dados->mc,
-                    'mc_taxa' => ''
+                    'prazo' => $dados->prazo,
+                    'gerente' => $nomes[$dados->gerente_regional]['nome'],
+                    'vendedor' => $nomes[$dados->vendedor]['nome'],
                 ];
             });
 
-        $media = (new Produtos())->newQuery()
-            ->select(DB::raw('AVG(prazo_medio) as media'))->first();
+        $valores = (new Produtos())->newQuery()
+            ->select(DB::raw('SUM(valor_total) as total_geral'))->first();
+        $total = 0;
+        foreach ($clientes as $cliente) {
+            $total += $cliente['valor'];
+        }
 
         return [
             'tabela' => $clientes,
-            'media' => $media['media'] ?? 0
+            'total' => $total,
+            'total_geral' => $valores['total_geral']
         ];
     }
 }

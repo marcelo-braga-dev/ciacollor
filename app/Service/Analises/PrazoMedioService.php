@@ -14,7 +14,7 @@ class PrazoMedioService
         $mes ? $query->whereMonth('data_cadastro', $mes) : null;
     }
 
-    public function filtroUsuario($query, $vendedor, $cliente, $gerente)
+    private function filtroUsuario($query, $vendedor, $cliente, $gerente)
     {
         if ($cliente) return $query->where('cliente', $cliente);
         if ($vendedor) return $query->where('vendedor', $vendedor);
@@ -40,7 +40,9 @@ class PrazoMedioService
             ->groupBy('cliente');
         $this->filtroPeriodo($query, $ano, $mes);
         $this->filtroUsuario($query, $vendedor, $cliente, $gerenteAtual);
-        $clientes = $query->get()
+        $clientes = $query->orderByDesc('valor')
+            ->get()
+
             ->transform(function ($dados) use ($nomes) {
                 return [
                     'cliente' => $dados->cliente,
