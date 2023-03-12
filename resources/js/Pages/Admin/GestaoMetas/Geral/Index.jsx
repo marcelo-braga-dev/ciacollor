@@ -171,8 +171,8 @@ export default function ({vendedores, gerentes}) {
                         <tr className="text-center">
                             <th className="bg-primary">Mês</th>
                             <th className="bg-primary">Meta {data.periodo === 'ano' ? 'Ano' : (data.periodo === 1 ? '1° Semestre' : '2° Semestre') }</th>
-                            <th className="bg-primary">Vendas {data.ano_analise}</th>
-                            <th className="bg-primary">Vendas {data.ano_comparar}</th>
+                            <th className="bg-primary">Vendas {data.ano_analise ?? 'Total'}</th>
+                            <th className="bg-primary">Vendas {data.ano_comparar ?? 'Total'}</th>
                             <th className="bg-primary">Vendas {data.ano_analise} X<br/> Vendas {data.ano_comparar}</th>
                             <th className="bg-primary">Vendas {data.ano_analise} X<br/> Metas {data.ano_comparar}</th>
                         </tr>

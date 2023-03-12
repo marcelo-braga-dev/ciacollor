@@ -21,10 +21,10 @@ class McService
         if ($gerente) return $query->where('gerente_regional', $gerente);
     }
 
-    public function calcular($request)
+    public function calcular($request, $gerente = null)
     {
         $nomes = (new User())->getNomes();
-        $gerenteAtual = $request->gerente;
+        $gerenteAtual = $gerente ?? $request->gerente;
         $vendedor = $request->vendedor;
         $cliente = $request->cliente;
         $mes = $request->mes;

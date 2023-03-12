@@ -1,4 +1,5 @@
 import Layout from "@/Layouts/Gerente/Layout";
+import convertFloatToMoney from "@/utils/convertFloatToMoney";
 
 export default function ({usuarios}) {
     return (
@@ -9,13 +10,14 @@ export default function ({usuarios}) {
                 </div>
             </div>
             <div className="table-responsive">
-                <table className="table">
+                <table className="table table-sm text-sm">
                     <thead>
                     <tr>
                         <th className="col-1">Código</th>
                         <th>Nome</th>
-                        <th>Meta Anual</th>
-                        <th></th>
+                        <th>Meta <br/>1° Semestre</th>
+                        <th>Meta <br/>2° Semestre</th>
+                        <th>Meta <br/>Anual</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -23,13 +25,12 @@ export default function ({usuarios}) {
                         return (
                             <tr key={index}>
                                 <td className="text-center">{usuario.codigo}</td>
-                                <td><b>{usuario.nome}</b></td>
-                                <td>{usuario.meta_anual ? <>R$ {usuario.meta_anual}</> : '-'}</td>
-                                <td>
-                                    <a className="btn btn-link text-dark p-0 m-0"
-                                       href={route('gerente.gestao-metas.vendedores.edit', usuario.id)}>
-                                        Editar
-                                    </a>
+                                <td className="text-wrap"><b>{usuario.nome}</b></td>
+                                <td className="text-wrap">{usuario.meta_semestre_1 ? <>R$ {convertFloatToMoney(usuario.meta_semestre_1)}</> : '-'}</td>
+                                <td className="text-wrap">{usuario.meta_semestre_2 ? <>R$ {convertFloatToMoney(usuario.meta_semestre_2)}</> : '-'}</td>
+                                <td className="text-wrap">
+                                    {usuario.meta_semestre_1 && usuario.meta_semestre_2 ?
+                                        <>R$ {usuario.meta_semestre_1 + usuario.meta_semestre_2}</> : '-'}
                                 </td>
                             </tr>
                         )

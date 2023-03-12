@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\MetaVendas;
 use App\Models\Produtos;
 use App\Models\User;
+use App\Service\Usuarios\Funcoes\GerenteRegionalUsuariosService;
 use App\Service\Usuarios\Funcoes\VendedoresUsuariosService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -21,16 +22,20 @@ class GeralController extends Controller
 
     public function filtrar(Request $request)
     {
-        $metaAnual = (new MetaVendas())->metaAnualGerente();
+        $gerente = id_usuario_atual();
+        $meta = (new MetaVendas())->metas($request->periodo);
         $vendasComparar = (new Produtos())
-            ->vendasMensalGeral($request->ano_analise, id_usuario_atual(), $request->vendedor);
+            ->vendasMensalGeral($request->ano_analise, $gerente, $request->vendedor,);
         $vendasAnalisar = (new Produtos())
-            ->vendasMensalGeral($request->ano_comparar, id_usuario_atual(), $request->vendedor);
+            ->vendasMensalGeral($request->ano_comparar, $gerente, $request->vendedor);
+
+        $vendedores = (new VendedoresUsuariosService())->getVendedoresPeloSuperior($gerente);
 
         return [
-            'meta_anual' => $metaAnual,
+            'meta' => $meta,
             'vendas_comparar' => $vendasComparar,
             'vendas_analisar' => $vendasAnalisar,
+            'vendedores' => $vendedores
         ];
     }
 }

@@ -7,11 +7,14 @@ import axios from "axios";
 import {useEffect, useState} from "react";
 
 export default function ({vendedores}) {
-    const {data, setData} = useForm();
+    const {data, setData} = useForm({
+        periodo: 'ano'
+    });
 
-    const [meta, setMeta] = useState();
-    const [vendasComparar, setVendasComparar] = useState();
-    const [vendasAnalisar, setVendasAnalisar] = useState();
+    const [metaAnual, setMetaAnual] = useState(0);
+    const [vendasComparar, setVendasComparar] = useState(0);
+    const [vendasAnalisar, setVendasAnalisar] = useState(0);
+    const [listaVendedores, setListaVendedores] = useState(vendedores);
     const [loading, setLoading] = useState(false);
 
     function buscarDados(key, valor) {
@@ -19,24 +22,31 @@ export default function ({vendedores}) {
         setLoading(true)
         axios.post(route('gerente.gestao-metas.filtro', {...data, [key]: valor}))
             .then((response) => {
-                setMeta(response.data.meta)
+                setMetaAnual(response.data.meta)
                 setVendasAnalisar(response.data.vendas_analisar)
                 setVendasComparar(response.data.vendas_comparar)
+                if (response.data.vendedores) setListaVendedores(response.data.vendedores)
                 setLoading(false)
             })
     }
 
-    const metaAno = round(meta / 12, 2)
-    const metaAnoFloat = round(meta / 12, 2)
+    const metaAno = round(metaAnual / 12, 2)
+    const metaAnoFloat = round(metaAnual / 12, 2)
 
     useEffect(() => {
         axios.post(route('gerente.gestao-metas.filtro', {...data}))
             .then((response) => {
-                setMeta(response.data.meta_anual)
+                setMetaAnual(response.data.meta)
                 setVendasAnalisar(response.data.vendas_analisar)
                 setVendasComparar(response.data.vendas_comparar)
             })
     }, []);
+
+    //LOading
+
+    const loadingAnimation = () => {
+        return <div className="row pt-4"><LinearProgress/></div>
+    }
 
     function convertMoney(valor) {
         const valorConvertido = valor?.toLocaleString('pt-BR', {
@@ -48,22 +58,10 @@ export default function ({vendedores}) {
         return valorConvertido
     }
 
-    const loadingAnimation = () => {
-        return <div className="row pt-4"><LinearProgress/></div>
-    }
-
-    const tri1 = () => vendasAnalisar[1].valor +
-        vendasAnalisar[2].valor +
-        vendasAnalisar[3].valor
-    const tri2 = () => vendasAnalisar[4].valor +
-        vendasAnalisar[5].valor +
-        vendasAnalisar[6].valor
-    const tri3 = () => vendasAnalisar[7].valor +
-        vendasAnalisar[8].valor +
-        vendasAnalisar[9].valor
-    const tri4 = () => vendasAnalisar[10].valor +
-        vendasAnalisar[11].valor +
-        vendasAnalisar[12].valor
+    const tri1 = () => vendasAnalisar[1].valor + vendasAnalisar[2].valor + vendasAnalisar[3].valor
+    const tri2 = () => vendasAnalisar[4].valor + vendasAnalisar[5].valor + vendasAnalisar[6].valor
+    const tri3 = () => vendasAnalisar[7].valor + vendasAnalisar[8].valor + vendasAnalisar[9].valor
+    const tri4 = () => vendasAnalisar[10].valor + vendasAnalisar[11].valor + vendasAnalisar[12].valor
 
     const metaTri = () => metaAno * 3
 
@@ -82,7 +80,7 @@ export default function ({vendedores}) {
                                 <MenuItem value="2023">2023</MenuItem>
                             </TextField>
                         </div>
-                        <div className="col-12 mb-3">
+                        <div className="col-12">
                             <label className="form-label">Ano a Comparar</label>
                             <TextField size="small" select fullWidth defaultValue=""
                                        onChange={e => buscarDados('ano_comparar', e.target.value)}>
@@ -93,14 +91,25 @@ export default function ({vendedores}) {
                             </TextField>
                         </div>
                         <div className="col-12">
+                            <label className="form-label">Período</label>
+                            <TextField size="small" select fullWidth defaultValue=""
+                                       onChange={e => buscarDados('periodo', e.target.value)}>
+                                <MenuItem value="1">1° Semestre</MenuItem>
+                                <MenuItem value="2">2° Semestre</MenuItem>
+                                <MenuItem value="ano">Anual</MenuItem>
+                            </TextField>
+                        </div>
+
+                        <div className="col-12 mt-3">
                             <label className="form-label">Vendedores</label>
                             <TextField size="small" select fullWidth defaultValue=""
                                        onChange={e => buscarDados('vendedor', e.target.value)}>
                                 <MenuItem value="">Todos</MenuItem>
-                                {vendedores.map((vendedor, index) => {
+                                {listaVendedores.map((vendedor, index) => {
                                     return (
-                                        <MenuItem key={index} value={vendedor.id}
-                                                  onChange={e => buscarDados('vendedor', e.target.value)}>{vendedor.codigo}-{vendedor.nome}</MenuItem>
+                                        <MenuItem key={index} value={vendedor.id}>
+                                            {vendedor.codigo}-{vendedor.nome}
+                                        </MenuItem>
                                     )
                                 })}
                             </TextField>
@@ -111,46 +120,45 @@ export default function ({vendedores}) {
                     <div className="row mb-3">
                         <div className="col-md-5 bg-primary text-white p-2 rounded mx-3 px-3">
                             <small className="d-block font-weight-bold">META PREVISTA ANO {data.ano_analise}:</small>
-                            {convertMoney(meta)}
+                            R$ {metaAnual?.toLocaleString()}
                         </div>
                         <div className="col-md-5 bg-primary text-white p-2 rounded mx-3 px-3">
                             <small className="d-block font-weight-bold">VENDA ACUMULADA {data.ano_analise}:</small>
-                            {vendasComparar && convertMoney(vendasComparar['total'])}
+                            R$ {vendasComparar && vendasComparar['total']?.toLocaleString()}
                         </div>
                     </div>
 
                     <div className="row mb-3">
                         <div className="col-md-5 bg-primary text-white p-2 rounded mx-3 px-3">
                             <small className="d-block font-weight-bold">META REALIZADA:</small>
-                            {round(vendasComparar?.total / meta, 3)}%
+                            {round(vendasComparar?.total / metaAnual, 3)}%
                         </div>
                         <div className="col-md-5 bg-primary text-white p-2 rounded mx-3 px-3">
                             <small className="d-block font-weight-bold">VALOR PARA ATINGIR META:</small>
-                            {vendasComparar && convertMoney(meta - vendasComparar['total'])}
+                            R$ {vendasComparar && (metaAnual - vendasComparar['total']).toLocaleString()}
                         </div>
                     </div>
 
                     <div className="row">
                         <div className="col-md-5 bg-primary text-white p-2 rounded mx-3 px-3">
                             <small className="d-block font-weight-bold">% PARA ATINGIR META:</small>
-                            {round((Math.abs(vendasComparar?.total / meta)), 3)} %
+                            {round((Math.abs(vendasComparar?.total / metaAnual)), 3)} %
                         </div>
                     </div>
-
                 </div>
             </div>
 
             {loading ? loadingAnimation() : ''}
-            {meta ? <>
+            {metaAnual ? <>
                 <h6>Análise Vendas no Mês</h6>
                 <div className="table-responsive">
                     <table className="table table-bordered table-hover">
                         <thead>
                         <tr className="text-center">
                             <th className="bg-primary">Mês</th>
-                            <th className="bg-primary">Meta {data.ano_analise}</th>
-                            <th className="bg-primary">Vendas {data.ano_analise}</th>
-                            <th className="bg-primary">Vendas {data.ano_comparar}</th>
+                            <th className="bg-primary">Meta {data.periodo === 'ano' ? 'Ano' : (data.periodo === 1 ? '1° Semestre' : '2° Semestre') }</th>
+                            <th className="bg-primary">Vendas {data.ano_analise ?? 'Total'}</th>
+                            <th className="bg-primary">Vendas {data.ano_comparar ?? 'Total'}</th>
                             <th className="bg-primary">Vendas {data.ano_analise} X<br/> Vendas {data.ano_comparar}</th>
                             <th className="bg-primary">Vendas {data.ano_analise} X<br/> Metas {data.ano_comparar}</th>
                         </tr>
@@ -253,9 +261,11 @@ export default function ({vendedores}) {
                             <td>{vendasComparar && convertMoney(vendasComparar[12].valor_float - vendasAnalisar[12].valor_float)}</td>
                             <td>{vendasComparar && convertMoney(vendasComparar[12].valor_float - metaAnoFloat)}</td>
                         </tr>
+
                         </tbody>
                     </table>
                 </div>
+
                 <div className="table-responsive mt-3">
                     <table className="table table-bordered table-hover">
                         <thead>
@@ -296,6 +306,7 @@ export default function ({vendedores}) {
 
                 </div>
             </> : loadingAnimation()}
+
         </Layout>
     )
 }
