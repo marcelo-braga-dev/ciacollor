@@ -56,14 +56,14 @@ class DescontoMedioService
                 ];
             });
 
-        $media = (new Produtos())->newQuery()
-            ->select(DB::raw('AVG(desconto) as media_desconto'))->first();
-
         $mediaTotal = [];
         foreach ($clientes as $cliente) {
             $mediaTotal[] = $cliente['media'];
         }
-        $mediaTotal = array_sum($mediaTotal) / count($mediaTotal);
+        try {
+            $mediaTotal = array_sum($mediaTotal) / count($mediaTotal);
+        } catch (\DivisionByZeroError) {}
+
 
         return [
             'tabela' => $clientes,

@@ -26,9 +26,9 @@ class VendedoresUsuariosService extends FuncoesService
     }
 
     // Possui Service
-    public function getUsersPeloSuperior($id)
+    public function getVendedoresPeloSuperior($id)
     {
-        $users = (new User())->getUserPeloSuperior($id);
+        $users = (new User())->getVendedorPeloSuperior($id);
         return $this->dados($users);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admins\Faturamento;
 use App\Http\Controllers\Controller;
 use App\Models\Produtos;
 use App\Service\Produtos\FaturamentoService;
+use App\Service\Usuarios\Funcoes\VendedoresUsuariosService;
 use App\Service\Usuarios\UsuariosService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -24,8 +25,19 @@ class VendedoresController extends Controller
         return (new FaturamentoService())->faturamentoVendedor($request);
     }
 
-    public function clientes()
+    public function clientes(Request $request)
     {
-        return (new Produtos())->getClientes();
+        $clientes = (new Produtos())->getClientes($request->gerente, $request->vendedor);
+
+        if ($request->gerente)
+            $vendedores = (new VendedoresUsuariosService())->getVendedoresPeloSuperior($request->gerente);
+        else {
+            $vendedores = (new VendedoresUsuariosService())->getUsers();
+        }
+
+        return [
+            'vendedores' => $vendedores,
+            'clientes' => $clientes
+        ];
     }
 }

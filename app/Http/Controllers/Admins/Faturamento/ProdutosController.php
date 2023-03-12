@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Produtos;
 use App\Service\Produtos\FaturamentoService;
 use App\Service\Produtos\GruposService;
+use App\Service\Usuarios\Funcoes\VendedoresUsuariosService;
 use App\Service\Usuarios\UsuariosService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -25,8 +26,19 @@ class ProdutosController extends Controller
         return (new GruposService())->faturamento(null, $request);
     }
 
-    public function clientes()
+    public function clientes(Request $request)
     {
-        return (new Produtos())->getClientes();
+        $clientes = (new Produtos())->getClientes($request->gerente, $request->vendedor);
+
+        if ($request->gerente)
+            $vendedores = (new VendedoresUsuariosService())->getVendedoresPeloSuperior($request->gerente);
+        else {
+            $vendedores = (new VendedoresUsuariosService())->getUsers();
+        }
+
+        return [
+            'vendedores' => $vendedores,
+            'clientes' => $clientes
+        ];
     }
 }

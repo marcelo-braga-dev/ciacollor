@@ -29,7 +29,7 @@ class GestaoMetasController extends Controller
         $vendasAnalisar = (new Produtos())
             ->vendasMensalGeral($request->ano_comparar, $request->gerente, $request->vendedor);
 
-        $vendedores = (new VendedoresUsuariosService())->getUsersPeloSuperior($request->gerente);
+        $vendedores = (new VendedoresUsuariosService())->getVendedoresPeloSuperior($request->gerente);
 
         return [
             'meta' => $meta,

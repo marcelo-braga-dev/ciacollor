@@ -14,7 +14,7 @@ class VendedoresController extends Controller
 {
     public function index()
     {
-        $usuarios = (new VendedoresUsuariosService())->getUsersPeloSuperior(id_usuario_atual());
+        $usuarios = (new VendedoresUsuariosService())->getVendedoresPeloSuperior(id_usuario_atual());
 
         return Inertia::render('Gerente/Usuarios/Vendedores/Index', compact('usuarios'));
     }

@@ -14,7 +14,7 @@ class GeralController extends Controller
 {
     public function index()
     {
-        $vendedores = (new VendedoresUsuariosService())->getUsersPeloSuperior(id_usuario_atual());
+        $vendedores = (new VendedoresUsuariosService())->getVendedoresPeloSuperior(id_usuario_atual());
 
         return Inertia::render('Gerente/GestaoMetas/Geral/Index', compact('vendedores'));
     }

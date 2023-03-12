@@ -85,11 +85,13 @@ class Produtos extends Model
         return $query->get(['data_cadastro', 'valor_total', 'litros', 'vendedor']);
     }
 
-    public function getClientes()
+    public function getClientes($gerente = null, $vendedor = null)
     {
-        return $this->newQuery()
-            ->distinct()
-            ->get(['cliente']);
+        $query = $this->newQuery()->distinct();
+
+        if ($gerente) $query->where('gerente_regional', $gerente);
+        if ($vendedor) $query->where('vendedor', $vendedor);
+        return $query->get(['cliente']);
     }
 
     public function vendasMensalGeral($ano, $gerente = null, $vendedor = null)

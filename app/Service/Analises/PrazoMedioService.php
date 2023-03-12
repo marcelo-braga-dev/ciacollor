@@ -53,12 +53,17 @@ class PrazoMedioService
                 ];
             });
 
-        $media = (new Produtos())->newQuery()
-            ->select(DB::raw('AVG(prazo_medio) as media'))->first();
+        $mediaQuery = (new Produtos())->newQuery()
+            ->select(DB::raw('
+            AVG(prazo_medio) as media_total'));
+
+        $this->filtroPeriodo($mediaQuery, $ano, $mes);
+        $this->filtroUsuario($mediaQuery, $vendedor, $cliente, $gerenteAtual);
+        $media = $mediaQuery->first();
 
         return [
             'tabela' => $clientes,
-            'media' => $media['media'] ?? 0
+            'media' => $media['media_total'] ?? 0
         ];
     }
 }

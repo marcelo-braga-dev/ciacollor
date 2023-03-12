@@ -12,29 +12,39 @@ export default function ({usuarios}) {
     const [media, setMedia] = useState([]);
     const [clientes, setClientes] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [vendedores, setVendedores] = useState([]);
+
+    function setDadados(tabela, media) {
+        setDadosTable(tabela)
+        setMedia(media)
+    }
 
     function buscarDados(key, valor) {
         setData(key, valor)
         setLoading(true)
         axios.post(route('admin.analise.prazo-medio-filtro', {...data, [key]: valor}))
             .then((response) => {
+                setDadados(response.data.tabela, response.data.media)
                 setDadosTable(response.data.tabela)
-                setMedia(response.data.media)
                 setLoading(false)
+                console.log(response)
             })
     }
 
     useEffect(() => {
         axios.post(route('admin.analise.prazo-medio-filtro', {...data}))
             .then((response) => {
-                setDadosTable(response.data.tabela)
-                setMedia(response.data.media)
-            })
-        axios.post(route('admin.analise.prazo-medio-clientes', {...data}))
-            .then((response) => {
-                setClientes(response.data)
+                setDadados(response.data.tabela, response.data.media)
             })
     }, []);
+
+    useEffect(() => {
+        axios.post(route('admin.analise.prazo-medio-clientes', {...data}))
+            .then((response) => {
+                setClientes(response.data.clientes)
+                setVendedores(response.data.vendedores)
+            })
+    }, [dadosTable]);
 
     //LOading
     const loadingAnimation = () => {
@@ -81,7 +91,7 @@ export default function ({usuarios}) {
                 <div className="col-md-3 text-center mx-4">
                     <div className="bg-success p-3 rounded text-white">
                         <h6>Prazo Médio</h6>
-                        <h3 className="d-block">{convertFloatToMoney(media, 0)}</h3>
+                        <h3 className="d-block">{convertFloatToMoney(media, 1)}</h3>
                     </div>
                 </div>
             </div>
@@ -104,7 +114,7 @@ export default function ({usuarios}) {
                     <TextField size="small" select fullWidth label="Vendedores" defaultValue=""
                                onChange={e => buscarDados('vendedor', e.target.value)}>
                         <MenuItem value="">Todos</MenuItem>
-                        {usuarios.vendedor.map((option, index) => {
+                        {vendedores.map((option, index) => {
                             return (
                                 <MenuItem key={index} value={option.id}>
                                     {option.nome}
@@ -153,7 +163,7 @@ export default function ({usuarios}) {
                         </tbody>
                     </table>
                 </div>
-            </> : loadingAnimation()}
+            </> : 'Nenhuma informação encontrada!'}
         </Layout>
     )
 }

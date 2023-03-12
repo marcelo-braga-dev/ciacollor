@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Produtos;
 use App\Service\Analises\McService;
 use App\Service\Produtos\FaturamentoService;
+use App\Service\Usuarios\Funcoes\VendedoresUsuariosService;
 use App\Service\Usuarios\UsuariosService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -16,6 +17,7 @@ class McController extends Controller
     {
         $usuarios = (new UsuariosService())->todosUsuarios();
 //print_pre((new McService())->calcular($request));
+
         return Inertia::render('Admin/Analises/Mc/Index',
             compact( 'usuarios'));
     }
@@ -25,8 +27,19 @@ class McController extends Controller
         return (new McService())->calcular($request);
     }
 
-    public function clientes()
+    public function clientes(Request $request)
     {
-        return (new Produtos())->getClientes();
+        $clientes = (new Produtos())->getClientes($request->gerente, $request->vendedor);
+
+        if ($request->gerente)
+            $vendedores = (new VendedoresUsuariosService())->getVendedoresPeloSuperior($request->gerente);
+        else {
+            $vendedores = (new VendedoresUsuariosService())->getUsers();
+        }
+
+        return [
+            'vendedores' => $vendedores,
+            'clientes' => $clientes
+        ];
     }
 }

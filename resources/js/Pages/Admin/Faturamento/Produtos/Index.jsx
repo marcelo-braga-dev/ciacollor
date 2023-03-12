@@ -14,14 +14,19 @@ export default function ({usuarios}) {
     const [dadosTotais, setDadosTotais] = useState([]);
     const [clientes, setClientes] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [vendedores, setVendedores] = useState([]);
+
+    function setDadados(tabela, totais) {
+        setDadosTable(tabela)
+        setDadosTotais(totais)
+    }
 
     function buscarDados(key, valor) {
         setData(key, valor)
         setLoading(true)
         axios.post(route('admin.faturamento.produtos-filtro', {...data, [key]: valor}))
             .then((response) => {
-                setDadosTable(response.data.tabela)
-                setDadosTotais(response.data.totais)
+                setDadados(response.data.tabela, response.data.totais)
                 setLoading(false)
             })
     }
@@ -29,14 +34,18 @@ export default function ({usuarios}) {
     useEffect(() => {
         axios.post(route('admin.faturamento.produtos-filtro', {...data}))
             .then((response) => {
-                setDadosTable(response.data.tabela)
-                setDadosTotais(response.data.totais)
-            })
-        axios.post(route('admin.faturamento.produtos-clientes', {...data}))
-            .then((response) => {
-                setClientes(response.data)
+                setDadados(response.data.tabela, response.data.totais)
             })
     }, []);
+
+    useEffect(() => {
+        axios.post(route('admin.faturamento.produtos-clientes', {...data}))
+            .then((response) => {
+                setClientes(response.data.clientes)
+                setVendedores(response.data.vendedores)
+                console.log(response.data)
+            })
+    }, [dadosTable]);
 
     //LOading
     const loadingAnimation = () => {
@@ -110,7 +119,7 @@ export default function ({usuarios}) {
                     <TextField size="small" select fullWidth label="Vendedores" defaultValue=""
                                onChange={e => buscarDados('vendedor', e.target.value)}>
                         <MenuItem value="">Todos</MenuItem>
-                        {usuarios.vendedor.map((option, index) => {
+                        {vendedores.map((option, index) => {
                             return (
                                 <MenuItem key={index} value={option.id}>
                                     {option.nome}
@@ -200,7 +209,7 @@ export default function ({usuarios}) {
                         </tbody>
                     </table>
                 </div>
-            </> : loadingAnimation()}
+            </> : 'Nenhuma informação encontrada!'}
         </Layout>
     )
 }

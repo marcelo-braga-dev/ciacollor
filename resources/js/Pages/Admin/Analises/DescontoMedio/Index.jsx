@@ -4,8 +4,6 @@ import MenuItem from "@mui/material/MenuItem";
 import {useForm} from "@inertiajs/react";
 import axios from "axios";
 import {useEffect, useState} from "react";
-import CircularProgress from "@mui/material/CircularProgress";
-import Backdrop from "@mui/material/Backdrop";
 import convertFloatToMoney from "@/utils/convertFloatToMoney";
 
 export default function ({usuarios}) {
@@ -14,15 +12,19 @@ export default function ({usuarios}) {
     const [media, setMedia] = useState([]);
     const [clientes, setClientes] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [vendedores, setVendedores] = useState([]);
+
+    function setDadados(tabela, media) {
+        setDadosTable(tabela)
+        setMedia(media)
+    }
 
     function buscarDados(key, valor) {
         setData(key, valor)
         setLoading(true)
         axios.post(route('admin.analise.desconto-medio-filtro', {...data, [key]: valor}))
             .then((response) => {
-                setDadosTable(response.data.tabela)
-                setMedia(response.data.media)
-
+                setDadados(response.data.tabela, response.data.media)
                 setLoading(false)
             })
     }
@@ -30,14 +32,17 @@ export default function ({usuarios}) {
     useEffect(() => {
         axios.post(route('admin.analise.desconto-medio-filtro', {...data}))
             .then((response) => {
-                setDadosTable(response.data.tabela)
-                setMedia(response.data.media)
-            })
-        axios.post(route('admin.analise.desconto-medio-clientes', {...data}))
-            .then((response) => {
-                setClientes(response.data)
+                setDadados(response.data.tabela, response.data.media, response.data.media_valor)
             })
     }, []);
+
+    useEffect(() => {
+        axios.post(route('admin.analise.desconto-medio-clientes', {...data}))
+            .then((response) => {
+                setClientes(response.data.clientes)
+                setVendedores(response.data.vendedores)
+            })
+    }, [dadosTable]);
 
     //LOading
     const loadingAnimation = () => {
@@ -107,7 +112,7 @@ export default function ({usuarios}) {
                     <TextField size="small" select fullWidth label="Vendedores" defaultValue=""
                                onChange={e => buscarDados('vendedor', e.target.value)}>
                         <MenuItem value="">Todos</MenuItem>
-                        {usuarios.vendedor.map((option, index) => {
+                        {vendedores.map((option, index) => {
                             return (
                                 <MenuItem key={index} value={option.id}>
                                     {option.nome}
@@ -161,7 +166,7 @@ export default function ({usuarios}) {
                         </tbody>
                     </table>
                 </div>
-            </> : loadingAnimation()}
+            </> : 'Nenhuma informação encontrada!'}
         </Layout>
     )
 }

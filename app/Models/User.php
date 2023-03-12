@@ -212,10 +212,12 @@ class User extends Authenticatable
     /**
      * Class Service: \App\Service\Usuarios\Funcoes\VendedoresUsuariosService
      */
-    public function getUserPeloSuperior($id)
+    public function getVendedorPeloSuperior($id)
     {
         return $this->newQuery()
             ->where('superior', $id)
+            ->where('superior', '!=', null)
+            ->where('funcao', (new VendedorUsuario())->getFuncao())
             ->get();
     }
 }

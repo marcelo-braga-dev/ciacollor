@@ -51,7 +51,7 @@ class MetaVendas extends Model
     {
         $id = $id ?? id_usuario_atual();
 
-        $vendedores = (new User())->getUserPeloSuperior($id);
+        $vendedores = (new User())->getVendedorPeloSuperior($id);
 
         $query = (new MetaVendas())->newQuery();
 

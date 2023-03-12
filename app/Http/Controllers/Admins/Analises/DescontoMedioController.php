@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Produtos;
 use App\Service\Analises\DescontoMedioService;
 use App\Service\Produtos\FaturamentoService;
+use App\Service\Usuarios\Funcoes\VendedoresUsuariosService;
 use App\Service\Usuarios\UsuariosService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -16,6 +17,7 @@ class DescontoMedioController extends Controller
     {
         $usuarios = (new UsuariosService())->todosUsuarios();
 //print_pre( (new DescontoMedioService())->calcular($request));
+
         return Inertia::render('Admin/Analises/DescontoMedio/Index',
             compact( 'usuarios'));
     }
@@ -25,8 +27,19 @@ class DescontoMedioController extends Controller
         return (new DescontoMedioService())->calcular($request);
     }
 
-    public function clientes()
+    public function clientes(Request $request)
     {
-        return (new Produtos())->getClientes();
+        $clientes = (new Produtos())->getClientes($request->gerente, $request->vendedor);
+
+        if ($request->gerente)
+            $vendedores = (new VendedoresUsuariosService())->getVendedoresPeloSuperior($request->gerente);
+        else {
+            $vendedores = (new VendedoresUsuariosService())->getUsers();
+        }
+
+        return [
+            'vendedores' => $vendedores,
+            'clientes' => $clientes
+        ];
     }
 }
