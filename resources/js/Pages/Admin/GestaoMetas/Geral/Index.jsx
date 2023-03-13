@@ -34,11 +34,13 @@ export default function ({vendedores, gerentes}) {
     const metaAnoFloat = round(metaAnual / 12, 2)
 
     useEffect(() => {
+        // setLoading(true)
         axios.post(route('admin.gestao-metas.filtro', {...data}))
             .then((response) => {
                 setMetaAnual(response.data.meta)
                 setVendasAnalisar(response.data.vendas_analisar)
                 setVendasComparar(response.data.vendas_comparar)
+                setLoading(false)
             })
     }, []);
 

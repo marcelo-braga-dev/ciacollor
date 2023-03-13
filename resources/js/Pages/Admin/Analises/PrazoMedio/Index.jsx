@@ -32,9 +32,11 @@ export default function ({usuarios}) {
     }
 
     useEffect(() => {
+        setLoading(true)
         axios.post(route('admin.analise.prazo-medio-filtro', {...data}))
             .then((response) => {
                 setDadados(response.data.tabela, response.data.media)
+                setLoading(false)
             })
     }, []);
 

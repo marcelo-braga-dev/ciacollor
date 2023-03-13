@@ -32,9 +32,11 @@ export default function ({usuarios}) {
     }
 
     useEffect(() => {
+        setLoading(true)
         axios.post(route('admin.faturamento.produtos-filtro', {...data}))
             .then((response) => {
                 setDadados(response.data.tabela, response.data.totais)
+                setLoading(false)
             })
     }, []);
 
