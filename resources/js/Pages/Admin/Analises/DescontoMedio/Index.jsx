@@ -30,9 +30,11 @@ export default function ({usuarios}) {
     }
 
     useEffect(() => {
+        setLoading(true)
         axios.post(route('admin.analise.desconto-medio-filtro', {...data}))
             .then((response) => {
                 setDadados(response.data.tabela, response.data.media, response.data.media_valor)
+                setLoading(false)
             })
     }, []);
 

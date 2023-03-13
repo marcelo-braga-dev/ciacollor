@@ -1,19 +1,33 @@
 import Layout from "@/Layouts/Admin/Layout";
 import convertFloatToMoney from "@/utils/convertFloatToMoney";
-import {LinearProgress} from "@mui/material";
+import {LinearProgress, TextField} from "@mui/material";
 import {useState, useEffect} from "react";
+import DescontoMedio from "./Graficos/DescontoMedio";
+import MediaMC from "./Graficos/MediaMC";
+import PrazoMedio from "./Graficos/PrazoMedio";
+import MenuItem from "@mui/material/MenuItem";
+import axios from "axios";
+import {useForm} from "@inertiajs/react";
 
-export default function Dashboard({produtos, gerentes, vendedores}) {
+export default function Dashboard() {
+    const [loading, setLoading] = useState(false);
+
+    const [gerenteFiltro, setGerenteFiltro] = useState([]);
+    const [vendedoresFiltro, setVendedoresFiltro] = useState([]);
+    const [gruposFiltro, setGruposFiltro] = useState([]);
+
+    const {data, setData} = useForm({})
+
     // PRODUTOS
     const [dadosProdutos, setDadosProdutos] = useState([]);
     const [totalProdutos, setTotalProdutos] = useState(0);
     const [totalProdutosGeral, setTotalProdutosGeral] = useState(0);
 
-    useEffect(() => {
-        setDadosProdutos(produtos.tabela)
-        setTotalProdutos(produtos.total)
-        setTotalProdutosGeral(produtos.total_geral)
-    }, []);
+    function preencheProdutos(dados) {
+        setDadosProdutos(dados.tabela)
+        setTotalProdutos(dados.total)
+        setTotalProdutosGeral(dados.total_geral)
+    }
     // PRODUTOS - fim
 
     // GERENTES
@@ -21,11 +35,11 @@ export default function Dashboard({produtos, gerentes, vendedores}) {
     const [totalGerentes, setTotalGerentes] = useState(0);
     const [totalGeralGerentes, setTotalGeralGerentes] = useState(0);
 
-    useEffect(() => {
-        setDadosGerentes(gerentes.tabela)
-        setTotalGerentes(gerentes.total_selecionados)
-        setTotalGeralGerentes(gerentes.total_geral)
-    }, []);
+    function preencheGerentes(dados) {
+        setDadosGerentes(dados.tabela)
+        setTotalGerentes(dados.total_selecionados)
+        setTotalGeralGerentes(dados.total_geral)
+    }
     // GERENTES - fim
 
     // VENDEDORES
@@ -33,12 +47,37 @@ export default function Dashboard({produtos, gerentes, vendedores}) {
     const [totalVendedores, setTotalVendedores] = useState(0);
     const [totalGeralVendedores, setTotalGeralVendedores] = useState(0);
 
-    useEffect(() => {
-        setDadosVendedores(vendedores.tabela)
-        setTotalVendedores(vendedores.total_selecionados)
-        setTotalGeralVendedores(vendedores.total_geral)
-    }, []);
+    function preencheVendedores(dados) {
+        setDadosVendedores(dados.tabela)
+        setTotalVendedores(dados.total_selecionados)
+        setTotalGeralVendedores(dados.total_geral)
+    }
     // VENDEDORES - fim
+
+    // Filtro
+    function buscarDados(key, valor) {
+        setData(key, valor)
+    }
+
+    useEffect(() => {
+        setLoading(true)
+        axios.post(route('admin.dashboard.relatorios-filtro', {...data}))
+            .then((response) => {
+                preencheVendedores(response.data.vendedores)
+                preencheGerentes(response.data.gerentes)
+                preencheProdutos(response.data.produtos)
+                setLoading(false)
+            })
+        axios.post(route('admin.dashboard.relatorios-filtro-usuarios', {...data}))
+            .then((response) => {
+                setGerenteFiltro(response.data.gerentes)
+                setVendedoresFiltro(response.data.vendedores)
+                setGruposFiltro(response.data.grupos)
+
+                setLoading(false)
+            })
+    }, [data]);
+    // Filtro - fim
 
     const loadingAnimation = () => {
         return <div className="row pt-4"><LinearProgress/></div>
@@ -46,16 +85,94 @@ export default function Dashboard({produtos, gerentes, vendedores}) {
 
     return (
         <Layout titlePage="Dashboard" menu="dashboard" submenu="relatorios">
+
+            {/*Filtro usuarios*/}
+            <div className="row mb-4 shadow p-3">
+                <div className="col-md-2">
+                    <TextField size="small" select fullWidth defaultValue="" label="Ano"
+                               onChange={e => buscarDados('ano', e.target.value)}>
+                        <MenuItem value="">Todos</MenuItem>
+                        <MenuItem value="2021">2021</MenuItem>
+                        <MenuItem value="2022">2022</MenuItem>
+                        <MenuItem value="2023">2023</MenuItem>
+                    </TextField>
+                </div>
+                <div className="col-md-2">
+                    <TextField size="small" select fullWidth defaultValue="" label="Mês"
+                               onChange={e => buscarDados('mes', e.target.value)}>
+                        <MenuItem value="">Todos</MenuItem>
+                        <MenuItem value="1">JAN</MenuItem>
+                        <MenuItem value="2">FEV</MenuItem>
+                        <MenuItem value="3">MAR</MenuItem>
+                        <MenuItem value="4">ABR</MenuItem>
+                        <MenuItem value="5">MAI</MenuItem>
+                        <MenuItem value="6">JUN</MenuItem>
+                        <MenuItem value="7">JUL</MenuItem>
+                        <MenuItem value="8">AGO</MenuItem>
+                        <MenuItem value="9">SET</MenuItem>
+                        <MenuItem value="10">OUT</MenuItem>
+                        <MenuItem value="11">NOV</MenuItem>
+                        <MenuItem value="12">DEZ</MenuItem>
+                    </TextField>
+                </div>
+                <div className="col-md-3 mb-4">
+                    <TextField size="small" select fullWidth label="Grupos" defaultValue=""
+                               onChange={e => buscarDados('grupo', e.target.value)}>
+                        <MenuItem value="">Todos</MenuItem>
+                        {gruposFiltro.map((option, index) => {
+                            return (
+                                <MenuItem key={index} value={option.cod}>
+                                    {option.nome}
+                                </MenuItem>
+                            )
+                        })}
+                    </TextField>
+                </div>
+                <div className="col-md-3 mb-4">
+                    <TextField size="small" select fullWidth label="Gerente Regional" defaultValue=""
+                               onChange={e => buscarDados('gerente', e.target.value)}>
+                        <MenuItem value="">Todos</MenuItem>
+                        {gerenteFiltro.map((option, index) => {
+                            return (
+                                <MenuItem key={index} value={option.id}>
+                                    {option.nome}
+                                </MenuItem>
+                            )
+                        })}
+                    </TextField>
+                </div>
+                <div className="col-md-2 mb-4">
+                    <TextField size="small" select fullWidth label="Vendedores" defaultValue=""
+                               onChange={e => buscarDados('vendedor', e.target.value)}>
+                        <MenuItem value="">Todos</MenuItem>
+                        {vendedoresFiltro.map((option, index) => {
+                            return (
+                                <MenuItem key={index} value={option.id}>
+                                    {option.nome}
+                                </MenuItem>
+                            )
+                        })}
+                    </TextField>
+                </div>
+            </div>
+            {/*Filtro usuarios - fim*/}
+
             <div className="mx-auto">
-                <div className="bg-white rounded overflow-hidden shadow-sm p-4">
-                    {/*<div className="row">*/}
-                    {/*    <div className="col-md-6">*/}
-                    {/*        <DescontoMedio />*/}
-                    {/*    </div>*/}
-                    {/*    <div className="col-md-6">*/}
-                    {/*        <MediaMC />*/}
-                    {/*    </div>*/}
-                    {/*</div>*/}
+
+                <div className="bg-white rounded overflow-hidden shadow-sm pb-4 px-4">
+                    {loading ? loadingAnimation() : ''}
+                    <span className="text-danger">Gráficos em Manutenção</span>
+                    <div className="row mt-4">
+                        <div className="col-md-4">
+                            <DescontoMedio />
+                        </div>
+                        <div className="col-md-4">
+                            <MediaMC />
+                        </div>
+                        <div className="col-md-4">
+                            <PrazoMedio />
+                        </div>
+                    </div>
 
                     {/*PRODUTOS*/}
                     {dadosProdutos.length ? <>
@@ -89,7 +206,7 @@ export default function Dashboard({produtos, gerentes, vendedores}) {
                                 </tbody>
                             </table>
                         </div>
-                    </> : 'Nenhum dados encotrado!'}
+                    </> : ''}
 
                     {/*GERENTES*/}
                     {dadosGerentes.length ? <>
@@ -121,7 +238,7 @@ export default function Dashboard({produtos, gerentes, vendedores}) {
                                 </tbody>
                             </table>
                         </div>
-                    </> : 'Nenhum dados encotrado!'}
+                    </> : ''}
 
                     {/*VENDEDORES*/}
                     {dadosVendedores.length ? <>
@@ -153,7 +270,7 @@ export default function Dashboard({produtos, gerentes, vendedores}) {
                                 </tbody>
                             </table>
                         </div>
-                    </> : 'Nenhum dados encotrado!'}
+                    </> : ''}
                 </div>
             </div>
         </Layout>

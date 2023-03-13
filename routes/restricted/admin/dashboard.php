@@ -8,4 +8,9 @@ Route::middleware('auth')
     ->prefix('admin/dashboard')
     ->group(function () {
         Route::resource('geral', DashboardController::class);
+        Route::post('relatorios-filtro', [DashboardController::class, 'filtrar'])
+            ->name('relatorios-filtro');
+
+        Route::post('relatorios-filtro-usuarios', [DashboardController::class, 'usuarios'])
+            ->name('relatorios-filtro-usuarios');
     });

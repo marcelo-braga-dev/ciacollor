@@ -14,9 +14,9 @@ class ProdutosService
         $mes ? $query->whereMonth('data_cadastro', $mes) : null;
     }
 
-    private function filtroUsuario($query, $vendedor, $cliente, $gerente)
+    private function filtroUsuario($query, $vendedor, $grupo, $gerente)
     {
-        if ($cliente) return $query->where('cliente', $cliente);
+        if ($grupo) return $query->where('cod_grupo', $grupo);
         if ($vendedor) return $query->where('vendedor', $vendedor);
         if ($gerente) return $query->where('gerente_regional', $gerente);
     }
@@ -26,7 +26,7 @@ class ProdutosService
         $nomes = (new User())->getNomes();
         $gerenteAtual = $request->gerente;
         $vendedor = $request->vendedor;
-        $cliente = $request->cliente;
+        $grupo = $request->grupo;
         $mes = $request->mes;
         $ano = $request->ano;
 
@@ -39,7 +39,7 @@ class ProdutosService
             )
             ->groupBy('cod_produto');
         $this->filtroPeriodo($query, $ano, $mes);
-        $this->filtroUsuario($query, $vendedor, $cliente, $gerenteAtual);
+        $this->filtroUsuario($query, $vendedor, $grupo, $gerenteAtual);
         $clientes = $query->orderByDesc('valor')
             ->limit(5)
             ->get()

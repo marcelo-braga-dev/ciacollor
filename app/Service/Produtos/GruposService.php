@@ -125,8 +125,16 @@ class GruposService
         return $res3;
     }
 
-    private function comple($dados)
+    public function getGrupos()
     {
-
+        return (new Produtos())->newQuery()
+            ->distinct()
+            ->get(['grupo', 'cod_grupo'])
+            ->transform(function ($dados) {
+                return [
+                    'cod' => $dados->cod_grupo,
+                    'nome' => $dados->grupo,
+                ];
+            });
     }
 }

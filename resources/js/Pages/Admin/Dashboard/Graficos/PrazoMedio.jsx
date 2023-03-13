@@ -5,7 +5,7 @@ export default function DescontoMedio()
 
     function drawChart() {
         var data = google.visualization.arrayToDataTable([
-            ['Desconto Médio', '%'],
+            ['Prazo Médio', '%'],
             ['Nome 1', 30],
             ['Nome 2', 10],
             ['Nome 3', 11],
@@ -15,19 +15,19 @@ export default function DescontoMedio()
 
         var options = {
             chart: {
-                title: 'Desconto Médio',
+                title: 'Prazo Médio',
             },
             legend: {position: 'none'},
             alignment: 'end'
         };
 
-        var chart = new google.charts.Bar(document.getElementById('columnchart_material'));
+        var chart = new google.charts.Bar(document.getElementById('prazo_medio'));
 
         chart.draw(data, google.charts.Bar.convertOptions(options));
 
 
     }
     return (
-        <div id="columnchart_material" style={{width: '100%', height: 350}}></div>
+        <div id="prazo_medio" style={{width: '100%', height: 350}}></div>
     )
 }

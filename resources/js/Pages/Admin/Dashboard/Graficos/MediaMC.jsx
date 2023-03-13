@@ -1,27 +1,33 @@
-export default function MediaMC()
+export default function DescontoMedio()
 {
-    google.charts.load("current", {packages:["corechart"]});
+    google.charts.load('current', {'packages':['bar']});
     google.charts.setOnLoadCallback(drawChart);
+
     function drawChart() {
-        const data = google.visualization.arrayToDataTable([
-            ['Task', 'Média M.C.'],
-            ['Work', 11],
-            ['Eat', 2],
-            ['Commute', 2],
-            ['Watch TV', 2],
-            ['Sleep', 7]
+        var data = google.visualization.arrayToDataTable([
+            ['Média MC', '%'],
+            ['Nome 1', 30],
+            ['Nome 2', 10],
+            ['Nome 3', 11],
+            ['Nome 4', 6],
+            ['Nome 5', 14]
         ]);
 
-        const options = {
-            title: 'Média M.C.',
-            is3D: false,
+        var options = {
+            chart: {
+                title: 'Média MC',
+            },
+            legend: {position: 'none'},
+            alignment: 'end'
         };
 
-        const chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
-        chart.draw(data, options);
-    }
+        var chart = new google.charts.Bar(document.getElementById('media_mc'));
 
-    return (<></>
-        // <div id="piechart_3d" style={{width: '100%'}}></div>
+        chart.draw(data, google.charts.Bar.convertOptions(options));
+
+
+    }
+    return (
+        <div id="media_mc" style={{width: '100%', height: 350}}></div>
     )
 }
